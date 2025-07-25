@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en" class="dark"> <!-- Set to dark mode by default -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentOS: The Operating System for the Third User</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+    <style>
+        :root {
+            --primary-accent: #007BFF;
+            --background-light: #f9fafb;
+            --background-dark: #030712;
+            --text-light: #111827;
+            --text-dark: #f9fafb;
+        }
+        html.dark {
+            color-scheme: dark;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            /* --- Disable Text Selection --- */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        /* Allow selection on input fields */
+        input, textarea {
+            user-select: auto;
+            -webkit-user-select: auto;
+            -moz-user-select: auto;
+            -ms-user-select: auto;
+        }
+        .cta-button {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 123, 255, 0.2), 0 4px 6px -2px rgba(0, 123, 255, 0.1);
+        }
+        /* --- New Secondary CTA Style --- */
+        .secondary-cta {
+            background-color: transparent;
+            border: 2px solid var(--primary-accent);
+            color: var(--primary-accent);
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .secondary-cta:hover {
+            background-color: var(--primary-accent);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 123, 255, 0.2), 0 4px 6px -2px rgba(0, 123, 255, 0.1);
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .card-hover .card-icon {
+            transition: transform 0.3s ease;
+        }
+        .card-hover h3, .card-hover p {
+            transition: transform 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 25px 30px -12px rgb(0 0 0 / 0.15);
+            border-color: var(--primary-accent);
+        }
+        .card-hover:hover .card-icon {
+            transform: scale(1.1);
+        }
+        .card-hover:hover h3,
+        .card-hover:hover p {
+            transform: scale(1.05);
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .sticky-nav {
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .animated-gradient {
+            background: linear-gradient(-45deg, #1e3a8a, #3b0764, #5b21b6, #111827);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.5;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        .shine-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        .shine-effect::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 20px;
+            height: 200%;
+            background: linear-gradient( to right, rgba(200, 200, 220, 0) 0%, rgba(200, 200, 220, 0.4) 50%, rgba(200, 200, 220, 0) 100% );
+            transform: rotate(25deg);
+            animation: wave-shine 8s ease-in-out infinite;
+            animation-delay: 3s;
+        }
+        @keyframes wave-shine {
+            0% { left: -50%; }
+            20% { left: 150%; }
+            100% { left: 150%; }
+        }
+        #message-box {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s, bottom 0.3s;
+        }
+        #message-box.show {
+            bottom: 20px;
+            opacity: 1;
+            visibility: visible;
+        }
+        #message-box.success { background-color: #28a745; }
+        #message-box.error { background-color: #dc3545; }
+
+        /* --- Animated Workflow Diagram Styles --- */
+        .workflow-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .workflow-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        .node-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--primary-accent);
+            background-color: #1f2937; /* gray-800 */
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.2);
+            animation: pulse 2.5s infinite ease-in-out;
+        }
+        .node-label {
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+        .workflow-arrow {
+            position: relative;
+            width: 50px;
+            height: 2px;
+            background-color: #9ca3af; /* gray-400 */
+        }
+        .workflow-arrow::after {
+            content: '';
+            position: absolute;
+            right: -2px;
+            top: -4px;
+            border: solid #9ca3af;
+            border-width: 0 2px 2px 0;
+            display: inline-block;
+            padding: 4px;
+            transform: rotate(-45deg);
+        }
+        .flow-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, var(--primary-accent), transparent);
+            animation: flow 4s linear infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @keyframes flow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        @media (max-width: 768px) {
+            .workflow-diagram {
+                flex-direction: column;
+            }
+            .workflow-arrow {
+                width: 2px;
+                height: 50px;
+                margin: 1rem 0;
+            }
+            .workflow-arrow::after {
+                right: -4px;
+                top: auto;
+                bottom: -2px;
+                transform: rotate(45deg);
+            }
+            .flow-animation {
+                background: linear-gradient(to bottom, transparent, var(--primary-accent), transparent);
+                animation: flow-vertical 4s linear infinite;
+            }
+            @keyframes flow-vertical {
+                0% { transform: translateY(-100%); }
+                100% { transform: translateY(100%); }
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100">
+
+    <!-- Sticky Navigation -->
+    <header id="main-header" class="sticky top-0 z-50 w-full sticky-nav bg-gray-900/70 backdrop-blur-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4 border-b border-gray-800">
+                <div class="text-2xl font-bold text-white shine-effect">AgentOS</div>
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#vision" class="text-gray-300 hover:text-blue-400">The Vision</a>
+                    <a href="#demo" class="text-gray-300 hover:text-blue-400">How It Works</a>
+                    <a href="#faq" class="text-gray-300 hover:text-blue-400">FAQ</a>
+                </nav>
+                <div class="hidden md:flex items-center gap-4">
+                    <a href="#join" class="cta-button bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg">Join Waitlist</a>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden text-gray-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-900">
+             <a href="#vision" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">The Vision</a>
+            <a href="#demo" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">How It Works</a>
+            <a href="#faq" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">FAQ</a>
+            <a href="#join" class="block py-2 px-4 text-sm text-blue-500 font-semibold hover:bg-gray-800">Join Waitlist</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative text-center min-h-screen flex items-center justify-center overflow-hidden">
+            <div class="animated-gradient"></div>
+            <canvas id="hero-canvas"></canvas>
+            <div class="container mx-auto px-4 hero-content">
+                <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 fade-in">The First Operating System for the Third User.</h1>
+                <p class="max-w-3xl mx-auto text-lg text-gray-300 mb-10 fade-in" style="transition-delay: 150ms;">Humans built the web for human eyes. AgentOS is built for AI agents — enabling them to perceive, act, and evolve in our world.</p>
+                <form id="waitlist-form-hero" class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6 fade-in" style="transition-delay: 300ms;">
+                    <input type="email" required name="email" placeholder="you@future.com" class="px-4 py-3 rounded-lg border border-gray-700 bg-gray-800/80 text-lg w-full sm:w-auto max-w-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <button type="submit" class="cta-button bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg text-lg w-full sm:w-auto">Join the Waitlist</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Social Proof / Backers -->
+        <section class="py-16 bg-gray-900">
+            <div class="container mx-auto px-4 fade-in">
+                <p class="text-center text-gray-400 font-semibold tracking-wider uppercase">FOR THE NEXT GENERATION OF BUILDERS AND CREATORS</p>
+            </div>
+        </section>
+
+        <!-- What We're Building Section -->
+        <section id="vision" class="py-24 bg-black">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl md:text-5xl font-bold text-center text-white mb-16 fade-in">What We’re Building</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Card 1: Perception -->
+                    <div class="card-hover bg-gray-900 p-8 rounded-xl border border-gray-800 fade-in">
+                        <div class="card-icon text-blue-500 mb-4">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Ground-Truth Perception</h3>
+                        <p class="text-gray-400">A flawless "retina" for agents, accessing raw visual data to see the world as it truly is.</p>
+                    </div>
+                    <!-- Card 2: Orchestration -->
+                    <div class="card-hover bg-gray-900 p-8 rounded-xl border border-gray-800 fade-in" style="transition-delay: 150ms;">
+                        <div class="card-icon text-blue-500 mb-4">
+                           <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Autonomous Orchestration</h3>
+                        <p class="text-gray-400">An AI Director that plans missions and delegates tasks to a dynamic team of agents.</p>
+                    </div>
+                    <!-- Card 3: Development -->
+                    <div class="card-hover bg-gray-900 p-8 rounded-xl border border-gray-800 fade-in" style="transition-delay: 300ms;">
+                        <div class="card-icon text-blue-500 mb-4">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Code-Generating DevAgents</h3>
+                        <p class="text-gray-400">A system that builds its own workforce, writing new agent code on the fly to solve novel problems.</p>
+                    </div>
+                    <!-- Card 4: Healing -->
+                    <div class="card-hover bg-gray-900 p-8 rounded-xl border border-gray-800 fade-in" style="transition-delay: 450ms;">
+                        <div class="card-icon text-blue-500 mb-4">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Self-Healing Systems</h3>
+                        <p class="text-gray-400">An AI workforce with an immune system, capable of diagnosing, patching, and retrying failed tasks.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Animated Workflow Section -->
+        <section id="demo" class="py-24">
+            <div class="container mx-auto px-4 fade-in">
+                <h2 class="text-4xl md:text-5xl font-bold text-center text-white mb-20">The Autonomous Loop</h2>
+                <div class="workflow-diagram">
+                    <div class="workflow-node">
+                        <div class="node-icon" style="animation-delay: 0s;">
+                            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </div>
+                        <p class="node-label text-white">Observe</p>
+                    </div>
+                    <div class="workflow-arrow"><div class="flow-animation"></div></div>
+                    <div class="workflow-node">
+                        <div class="node-icon" style="animation-delay: 0.5s;">
+                            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        </div>
+                        <p class="node-label text-white">Think</p>
+                    </div>
+                    <div class="workflow-arrow"><div class="flow-animation" style="animation-delay: 1s;"></div></div>
+                    <div class="workflow-node">
+                        <div class="node-icon" style="animation-delay: 1s;">
+                            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        </div>
+                        <p class="node-label text-white">Act</p>
+                    </div>
+                    <div class="workflow-arrow"><div class="flow-animation" style="animation-delay: 2s;"></div></div>
+                    <div class="workflow-node">
+                        <div class="node-icon" style="animation-delay: 1.5s;">
+                            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        </div>
+                        <p class="node-label text-white">Heal</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Manifesto Section -->
+        <section class="py-24 bg-gray-900">
+            <div class="container mx-auto px-4 fade-in">
+                <p class="text-2xl md:text-3xl font-medium text-center text-gray-300 max-w-4xl mx-auto leading-relaxed">"The next user of the internet isn't human. It's the AI Agent. We are building the browser for this third user. The companies that adapt will own the agent economy. Everyone else will become irrelevant."</p>
+            </div>
+        </section>
+
+        <!-- Join the Movement Section -->
+        <section id="join" class="py-24 bg-black text-center">
+            <div class="container mx-auto px-4 fade-in">
+                <h2 class="text-4xl font-bold mb-4 text-white">This is Just the Beginning.</h2>
+                <p class="text-lg text-gray-400 max-w-2xl mx-auto mb-8">
+                    We’re assembling a coalition of engineers, founders, and futurists to build the operating system for AI agents. Want in early?
+                </p>
+                <form id="waitlist-form-footer" class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6">
+                    <input type="email" required name="email" placeholder="you@future.com" class="px-4 py-3 rounded-lg border border-gray-700 bg-gray-800/80 text-lg w-full sm:w-auto max-w-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <button type="submit" class="cta-button bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg text-lg w-full sm:w-auto">Join the Waitlist</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Recruitment Section -->
+        <section id="recruit" class="py-24 bg-gray-900 text-center">
+            <div class="container mx-auto px-4 fade-in">
+                <h2 class="text-4xl font-bold mb-4 text-white">Help Build the Future</h2>
+                <p class="text-lg text-gray-400 max-w-2xl mx-auto mb-8">
+                    This is a monumental task, and we can't do it alone. If you're a talented engineer or visionary passionate about autonomous agents, we want to hear from you.
+                </p>
+                <a href="contribute.html" class="secondary-cta font-semibold px-8 py-3 rounded-lg text-lg inline-block">I'm Interested in Contributing</a>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="py-24 bg-black">
+             <div class="container mx-auto px-4 max-w-3xl">
+                <h2 class="text-3xl md:text-4xl font-bold text-center text-white mb-12 fade-in">Frequently Asked Questions</h2>
+                <div class="space-y-4 fade-in">
+                    <div class="faq-item bg-gray-800 border border-gray-700 rounded-lg">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-6">
+                            <span class="text-lg font-semibold">What is AgentOS?</span>
+                            <svg class="w-6 h-6 shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer hidden p-6 pt-0 text-gray-400">
+                            <p>AgentOS is a new kind of operating system designed for AI agents. It provides a perception and execution layer that allows autonomous agents to operate any software or website, just like a human would, without needing APIs.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item bg-gray-800 border border-gray-700 rounded-lg">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-6">
+                            <span class="text-lg font-semibold">How is this different from RPA or browser automation?</span>
+                            <svg class="w-6 h-6 shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer hidden p-6 pt-0 text-gray-400">
+                            <p>Traditional automation relies on brittle, hardcoded selectors or scripts. AgentOS is dynamic. Its agents perceive the screen visually and make decisions in real-time. When a UI changes, our Self-Healing system can automatically diagnose the problem and generate a fix.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black text-gray-400">
+        <div class="container mx-auto px-4 py-12 text-center">
+            <p>&copy; 2025 AgentOS. The OS for the Third User.</p>
+        </div>
+    </footer>
+    
+    <div id="message-box"></div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { firebaseConfig } from './firebase-config.js';
+        // IMPORTANT: Replace this with your actual Firebase config object
+
+
+        window.initializeAppFirebase = () => {
+            try {
+                const app = initializeApp(firebaseConfig);
+                window.db = getFirestore(app);
+                console.log("Firebase Initialized Successfully");
+            } catch (e) {
+                console.error("Firebase initialization error:", e);
+                if (e.code === 'duplicate-app') {
+                    console.log("Firebase app already initialized.");
+                }
+            }
+        };
+
+        window.handleWaitlistSubmit = async (event) => {
+            event.preventDefault();
+            if (!window.db) {
+                window.showMessage('Backend not ready. Please try again.', 'error');
+                return;
+            }
+
+            const form = event.target;
+            const emailInput = form.querySelector('input[name="email"]');
+            const submitButton = form.querySelector('button[type="submit"]');
+            const email = emailInput.value;
+
+            if (!email || !email.includes('@')) {
+                window.showMessage('Please enter a valid email.', 'error');
+                return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Joining...';
+
+            try {
+                await addDoc(collection(window.db, "waitlist"), {
+                    email: email,
+                    timestamp: serverTimestamp()
+                });
+                window.showMessage('Success! You are on the waitlist.', 'success');
+                emailInput.value = '';
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                window.showMessage('Something went wrong. Please try again.', 'error');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Join the Waitlist';
+            }
+        };
+        
+        window.showMessage = (message, type = 'success') => {
+            const messageBox = document.getElementById('message-box');
+            if(!messageBox) return;
+            messageBox.textContent = message;
+            messageBox.className = `show ${type}`;
+            setTimeout(() => {
+                messageBox.className = messageBox.className.replace('show', '');
+            }, 3000);
+        };
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof window.initializeAppFirebase === 'function') {
+                window.initializeAppFirebase();
+            }
+
+            const heroForm = document.getElementById('waitlist-form-hero');
+            if(heroForm) heroForm.addEventListener('submit', window.handleWaitlistSubmit);
+            
+            const footerForm = document.getElementById('waitlist-form-footer');
+            if(footerForm) footerForm.addEventListener('submit', window.handleWaitlistSubmit);
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if(mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+                mobileMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.add('hidden');
+                    });
+                });
+            }
+
+            const header = document.getElementById('main-header');
+            if(header) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 10) {
+                        header.classList.add('shadow-sm');
+                    } else {
+                        header.classList.remove('shadow-sm');
+                    }
+                });
+            }
+
+            document.querySelectorAll('.faq-question').forEach(button => {
+                button.addEventListener('click', () => {
+                    const answer = button.nextElementSibling;
+                    const icon = button.querySelector('svg');
+                    if(answer && icon) {
+                        answer.classList.toggle('hidden');
+                        icon.classList.toggle('rotate-180');
+                    }
+                });
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                       entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+            let scene, camera, renderer, baseSphere, agentLayer;
+
+            function initThree() {
+                const canvas = document.getElementById('hero-canvas');
+                if (!canvas || !THREE) return;
+
+                const container = canvas.parentElement;
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+                renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+                renderer.setSize(container.clientWidth, container.clientHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+
+                const baseGeometry = new THREE.SphereGeometry(1, 32, 32);
+                const baseMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0x334155,
+                    metalness: 0.1,
+                    roughness: 0.8,
+                });
+                baseSphere = new THREE.Mesh(baseGeometry, baseMaterial);
+                scene.add(baseSphere);
+
+                const agentGeometry = new THREE.IcosahedronGeometry(1.5, 1);
+                const agentMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0x3b82f6,
+                    metalness: 0.2,
+                    roughness: 0.6,
+                    wireframe: true
+                });
+                agentLayer = new THREE.Mesh(agentGeometry, agentMaterial);
+                scene.add(agentLayer);
+
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+                scene.add(ambientLight);
+                const pointLight = new THREE.PointLight(0xffffff, 1.2);
+                pointLight.position.set(5, 5, 5);
+                scene.add(pointLight);
+
+                camera.position.z = 4;
+                animate();
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                if(baseSphere && agentLayer) {
+                    baseSphere.rotation.y += 0.0005;
+                    agentLayer.rotation.x += 0.001;
+                    agentLayer.rotation.y += 0.002;
+                }
+                if(renderer && scene && camera) {
+                    renderer.render(scene, camera);
+                }
+            }
+
+            function onWindowResize() {
+                const canvas = document.getElementById('hero-canvas');
+                if (!canvas || !camera || !renderer) return;
+                const container = canvas.parentElement;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+
+            window.addEventListener('resize', onWindowResize, false);
+            
+            initThree();
+        });
+    </script>
+</body>
+</html>
