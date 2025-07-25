@@ -12,242 +12,44 @@
     <style>
         :root {
             --primary-accent: #007BFF;
-            --background-light: #f9fafb;
             --background-dark: #030712;
-            --text-light: #111827;
-            --text-dark: #f9fafb;
         }
-        html.dark {
-            color-scheme: dark;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            /* --- Disable Text Selection --- */
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
-        /* Allow selection on input fields */
-        input, textarea {
-            user-select: auto;
-            -webkit-user-select: auto;
-            -moz-user-select: auto;
-            -ms-user-select: auto;
-        }
-        .cta-button {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 123, 255, 0.2), 0 4px 6px -2px rgba(0, 123, 255, 0.1);
-        }
-        /* --- New Secondary CTA Style --- */
-        .secondary-cta {
-            background-color: transparent;
-            border: 2px solid var(--primary-accent);
-            color: var(--primary-accent);
-            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .secondary-cta:hover {
-            background-color: var(--primary-accent);
-            color: #ffffff;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 123, 255, 0.2), 0 4px 6px -2px rgba(0, 123, 255, 0.1);
-        }
-        .card-hover {
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-        }
-        .card-hover .card-icon {
-            transition: transform 0.3s ease;
-        }
-        .card-hover h3, .card-hover p {
-            transition: transform 0.3s ease;
-        }
-        .card-hover:hover {
-            transform: translateY(-8px) scale(1.03);
-            box-shadow: 0 25px 30px -12px rgb(0 0 0 / 0.15);
-            border-color: var(--primary-accent);
-        }
-        .card-hover:hover .card-icon {
-            transform: scale(1.1);
-        }
-        .card-hover:hover h3,
-        .card-hover:hover p {
-            transform: scale(1.05);
-        }
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .sticky-nav {
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        .animated-gradient {
-            background: linear-gradient(-45deg, #1e3a8a, #3b0764, #5b21b6, #111827);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.4;
-        }
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        #hero-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            opacity: 0.5;
-        }
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-        .shine-effect {
-            position: relative;
-            overflow: hidden;
-        }
-        .shine-effect::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 20px;
-            height: 200%;
-            background: linear-gradient( to right, rgba(200, 200, 220, 0) 0%, rgba(200, 200, 220, 0.4) 50%, rgba(200, 200, 220, 0) 100% );
-            transform: rotate(25deg);
-            animation: wave-shine 8s ease-in-out infinite;
-            animation-delay: 3s;
-        }
-        @keyframes wave-shine {
-            0% { left: -50%; }
-            20% { left: 150%; }
-            100% { left: 150%; }
-        }
-        #message-box {
-            position: fixed;
-            bottom: -100px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            border-radius: 8px;
-            color: white;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s, bottom 0.3s;
-        }
-        #message-box.show {
-            bottom: 20px;
-            opacity: 1;
-            visibility: visible;
-        }
+        html.dark { color-scheme: dark; }
+        body { font-family: 'Inter', sans-serif; user-select: none; -webkit-user-select: none; }
+        input, textarea { user-select: auto; -webkit-user-select: auto; }
+        .cta-button { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 123, 255, 0.2), 0 4px 6px -2px rgba(0, 123, 255, 0.1); }
+        .secondary-cta { background-color: transparent; border: 2px solid var(--primary-accent); color: var(--primary-accent); transition: all 0.3s ease; }
+        .secondary-cta:hover { background-color: var(--primary-accent); color: #ffffff; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 123, 255, 0.2); }
+        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; }
+        .card-hover .card-icon, .card-hover h3, .card-hover p { transition: transform 0.3s ease; }
+        .card-hover:hover { transform: translateY(-8px) scale(1.03); box-shadow: 0 25px 30px -12px rgb(0 0 0 / 0.15); border-color: var(--primary-accent); }
+        .card-hover:hover .card-icon { transform: scale(1.1); }
+        .card-hover:hover h3, .card-hover:hover p { transform: scale(1.05); }
+        .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        .sticky-nav { transition: background-color 0.3s ease, box-shadow 0.3s ease; }
+        .animated-gradient { background: linear-gradient(-45deg, #1e3a8a, #3b0764, #5b21b6, #111827); background-size: 400% 400%; animation: gradient 15s ease infinite; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.4; }
+        @keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.5; }
+        .hero-content { position: relative; z-index: 1; }
+        .shine-effect { position: relative; overflow: hidden; }
+        .shine-effect::after { content: ''; position: absolute; top: -50%; left: -50%; width: 20px; height: 200%; background: linear-gradient(to right, rgba(200, 200, 220, 0) 0%, rgba(200, 200, 220, 0.4) 50%, rgba(200, 200, 220, 0) 100%); transform: rotate(25deg); animation: wave-shine 8s ease-in-out infinite; animation-delay: 3s; }
+        @keyframes wave-shine { 0% { left: -50%; } 20% { left: 150%; } 100% { left: 150%; } }
+        #message-box { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 8px; color: white; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        #message-box.show { bottom: 20px; opacity: 1; visibility: visible; }
         #message-box.success { background-color: #28a745; }
         #message-box.error { background-color: #dc3545; }
-
-        /* --- Animated Workflow Diagram Styles --- */
-        .workflow-diagram {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-        .workflow-node {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            position: relative;
-        }
-        .node-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid var(--primary-accent);
-            background-color: #1f2937; /* gray-800 */
-            box-shadow: 0 0 15px rgba(0, 123, 255, 0.2);
-            animation: pulse 2.5s infinite ease-in-out;
-        }
-        .node-label {
-            margin-top: 1rem;
-            font-weight: 600;
-        }
-        .workflow-arrow {
-            position: relative;
-            width: 50px;
-            height: 2px;
-            background-color: #9ca3af; /* gray-400 */
-        }
-        .workflow-arrow::after {
-            content: '';
-            position: absolute;
-            right: -2px;
-            top: -4px;
-            border: solid #9ca3af;
-            border-width: 0 2px 2px 0;
-            display: inline-block;
-            padding: 4px;
-            transform: rotate(-45deg);
-        }
-        .flow-animation {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to right, transparent, var(--primary-accent), transparent);
-            animation: flow 4s linear infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        @keyframes flow {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        @media (max-width: 768px) {
-            .workflow-diagram {
-                flex-direction: column;
-            }
-            .workflow-arrow {
-                width: 2px;
-                height: 50px;
-                margin: 1rem 0;
-            }
-            .workflow-arrow::after {
-                right: -4px;
-                top: auto;
-                bottom: -2px;
-                transform: rotate(45deg);
-            }
-            .flow-animation {
-                background: linear-gradient(to bottom, transparent, var(--primary-accent), transparent);
-                animation: flow-vertical 4s linear infinite;
-            }
-            @keyframes flow-vertical {
-                0% { transform: translateY(-100%); }
-                100% { transform: translateY(100%); }
-            }
-        }
+        .workflow-diagram { display: flex; justify-content: center; align-items: center; gap: 2rem; flex-wrap: wrap; }
+        .workflow-node { display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
+        .node-icon { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--primary-accent); background-color: #1f2937; box-shadow: 0 0 15px rgba(0, 123, 255, 0.2); animation: pulse 2.5s infinite ease-in-out; }
+        .node-label { margin-top: 1rem; font-weight: 600; }
+        .workflow-arrow { position: relative; width: 50px; height: 2px; background-color: #9ca3af; }
+        .workflow-arrow::after { content: ''; position: absolute; right: -2px; top: -4px; border: solid #9ca3af; border-width: 0 2px 2px 0; display: inline-block; padding: 4px; transform: rotate(-45deg); }
+        .flow-animation { position: absolute; width: 100%; height: 100%; background: linear-gradient(to right, transparent, var(--primary-accent), transparent); animation: flow 4s linear infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes flow { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        @media (max-width: 768px) { .workflow-diagram { flex-direction: column; } .workflow-arrow { width: 2px; height: 50px; margin: 1rem 0; } .workflow-arrow::after { right: -4px; top: auto; bottom: -2px; transform: rotate(45deg); } .flow-animation { background: linear-gradient(to bottom, transparent, var(--primary-accent), transparent); animation: flow-vertical 4s linear infinite; } @keyframes flow-vertical { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } } }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100">
@@ -305,35 +107,23 @@
             <div class="container mx-auto px-4">
                 <h2 class="text-4xl md:text-5xl font-bold text-center text-white mb-16 fade-in">What We’re Building</h2>
                 <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Card 1: Perception -->
                     <div class="card-hover bg-gray-900 p-8 rounded-xl border border-gray-800 fade-in">
-                        <div class="card-icon text-blue-500 mb-4">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                        </div>
+                        <div class="card-icon text-blue-500 mb-4"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div>
                         <h3 class="text-xl font-semibold mb-2">Ground-Truth Perception</h3>
                         <p class="text-gray-400">A flawless "retina" for agents, accessing raw visual data to see the world as it truly is.</p>
                     </div>
-                    <!-- Card 2: Orchestration -->
                     <div class="card-hover bg-gray-900 p-8 rounded-xl border border-gray-800 fade-in" style="transition-delay: 150ms;">
-                        <div class="card-icon text-blue-500 mb-4">
-                           <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                        </div>
+                        <div class="card-icon text-blue-500 mb-4"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
                         <h3 class="text-xl font-semibold mb-2">Autonomous Orchestration</h3>
                         <p class="text-gray-400">An AI Director that plans missions and delegates tasks to a dynamic team of agents.</p>
                     </div>
-                    <!-- Card 3: Development -->
                     <div class="card-hover bg-gray-900 p-8 rounded-xl border border-gray-800 fade-in" style="transition-delay: 300ms;">
-                        <div class="card-icon text-blue-500 mb-4">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                        </div>
+                        <div class="card-icon text-blue-500 mb-4"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg></div>
                         <h3 class="text-xl font-semibold mb-2">Code-Generating DevAgents</h3>
                         <p class="text-gray-400">A system that builds its own workforce, writing new agent code on the fly to solve novel problems.</p>
                     </div>
-                    <!-- Card 4: Healing -->
                     <div class="card-hover bg-gray-900 p-8 rounded-xl border border-gray-800 fade-in" style="transition-delay: 450ms;">
-                        <div class="card-icon text-blue-500 mb-4">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                        </div>
+                        <div class="card-icon text-blue-500 mb-4"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
                         <h3 class="text-xl font-semibold mb-2">Self-Healing Systems</h3>
                         <p class="text-gray-400">An AI workforce with an immune system, capable of diagnosing, patching, and retrying failed tasks.</p>
                     </div>
@@ -346,33 +136,13 @@
             <div class="container mx-auto px-4 fade-in">
                 <h2 class="text-4xl md:text-5xl font-bold text-center text-white mb-20">The Autonomous Loop</h2>
                 <div class="workflow-diagram">
-                    <div class="workflow-node">
-                        <div class="node-icon" style="animation-delay: 0s;">
-                            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                        </div>
-                        <p class="node-label text-white">Observe</p>
-                    </div>
+                    <div class="workflow-node"><div class="node-icon" style="animation-delay: 0s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div><p class="node-label text-white">Observe</p></div>
                     <div class="workflow-arrow"><div class="flow-animation"></div></div>
-                    <div class="workflow-node">
-                        <div class="node-icon" style="animation-delay: 0.5s;">
-                            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-                        </div>
-                        <p class="node-label text-white">Think</p>
-                    </div>
+                    <div class="workflow-node"><div class="node-icon" style="animation-delay: 0.5s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg></div><p class="node-label text-white">Think</p></div>
                     <div class="workflow-arrow"><div class="flow-animation" style="animation-delay: 1s;"></div></div>
-                    <div class="workflow-node">
-                        <div class="node-icon" style="animation-delay: 1s;">
-                            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        </div>
-                        <p class="node-label text-white">Act</p>
-                    </div>
+                    <div class="workflow-node"><div class="node-icon" style="animation-delay: 1s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></div><p class="node-label text-white">Act</p></div>
                     <div class="workflow-arrow"><div class="flow-animation" style="animation-delay: 2s;"></div></div>
-                    <div class="workflow-node">
-                        <div class="node-icon" style="animation-delay: 1.5s;">
-                            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                        </div>
-                        <p class="node-label text-white">Heal</p>
-                    </div>
+                    <div class="workflow-node"><div class="node-icon" style="animation-delay: 1.5s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div><p class="node-label text-white">Heal</p></div>
                 </div>
             </div>
         </section>
@@ -446,31 +216,32 @@
     
     <div id="message-box"></div>
 
-    <!-- Firebase SDK -->
+    <!-- Load Firebase Config First -->
+    <!-- IMPORTANT: Create a file named 'firebase-config.js' in the same folder -->
+    <!-- and add your firebaseConfig object to it, like this: -->
+    <!-- const firebaseConfig = { apiKey: "...", ... }; -->
+    <script src="./firebase-config.js"></script>
+
+    <!-- Main Application Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { firebaseConfig } from './firebase-config.js';
-        // IMPORTANT: Replace this with your actual Firebase config object
+        
+        // The firebaseConfig object is now available globally from the script above
+        
+        window.db = null;
+        try {
+            const app = initializeApp(firebaseConfig);
+            window.db = getFirestore(app);
+            console.log("Firebase Initialized Successfully");
+        } catch (e) {
+            console.error("Firebase initialization error:", e);
+        }
 
-
-        window.initializeAppFirebase = () => {
-            try {
-                const app = initializeApp(firebaseConfig);
-                window.db = getFirestore(app);
-                console.log("Firebase Initialized Successfully");
-            } catch (e) {
-                console.error("Firebase initialization error:", e);
-                if (e.code === 'duplicate-app') {
-                    console.log("Firebase app already initialized.");
-                }
-            }
-        };
-
-        window.handleWaitlistSubmit = async (event) => {
+        async function handleWaitlistSubmit(event) {
             event.preventDefault();
             if (!window.db) {
-                window.showMessage('Backend not ready. Please try again.', 'error');
+                showMessage('Backend not ready. Please try again.', 'error');
                 return;
             }
 
@@ -480,7 +251,7 @@
             const email = emailInput.value;
 
             if (!email || !email.includes('@')) {
-                window.showMessage('Please enter a valid email.', 'error');
+                showMessage('Please enter a valid email.', 'error');
                 return;
             }
 
@@ -492,18 +263,18 @@
                     email: email,
                     timestamp: serverTimestamp()
                 });
-                window.showMessage('Success! You are on the waitlist.', 'success');
+                showMessage('Success! You are on the waitlist.', 'success');
                 emailInput.value = '';
             } catch (e) {
                 console.error("Error adding document: ", e);
-                window.showMessage('Something went wrong. Please try again.', 'error');
+                showMessage('Something went wrong. Please try again.', 'error');
             } finally {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Join the Waitlist';
             }
-        };
+        }
         
-        window.showMessage = (message, type = 'success') => {
+        function showMessage(message, type = 'success') {
             const messageBox = document.getElementById('message-box');
             if(!messageBox) return;
             messageBox.textContent = message;
@@ -511,21 +282,20 @@
             setTimeout(() => {
                 messageBox.className = messageBox.className.replace('show', '');
             }, 3000);
-        };
+        }
+
+        // Attach listeners after the DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const heroForm = document.getElementById('waitlist-form-hero');
+            if(heroForm) heroForm.addEventListener('submit', handleWaitlistSubmit);
+            
+            const footerForm = document.getElementById('waitlist-form-footer');
+            if(footerForm) footerForm.addEventListener('submit', handleWaitlistSubmit);
+        });
     </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            if (typeof window.initializeAppFirebase === 'function') {
-                window.initializeAppFirebase();
-            }
-
-            const heroForm = document.getElementById('waitlist-form-hero');
-            if(heroForm) heroForm.addEventListener('submit', window.handleWaitlistSubmit);
-            
-            const footerForm = document.getElementById('waitlist-form-footer');
-            if(footerForm) footerForm.addEventListener('submit', window.handleWaitlistSubmit);
-
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
             if(mobileMenuButton && mobileMenu) {

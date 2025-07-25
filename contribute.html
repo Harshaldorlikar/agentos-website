@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="light"> <!-- Default to light mode -->
+<html lang="en" class="dark"> <!-- Default to dark mode -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,17 +11,19 @@
     <style>
         :root {
             --primary-accent: #007BFF;
-            --background-light: #f9fafb;
             --background-dark: #030712;
-            --text-light: #111827;
-            --text-dark: #f9fafb;
         }
         html.dark {
             color-scheme: dark;
         }
         body {
             font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        input, textarea {
+            user-select: auto;
+            -webkit-user-select: auto;
         }
         .cta-button {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -41,18 +43,24 @@
             left: -50%;
             width: 20px;
             height: 200%;
-            background: linear-gradient( to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) 100% );
+            background: linear-gradient( to right, rgba(200, 200, 220, 0) 0%, rgba(200, 200, 220, 0.4) 50%, rgba(200, 200, 220, 0) 100% );
             transform: rotate(25deg);
             animation: wave-shine 8s ease-in-out infinite;
             animation-delay: 3s;
-        }
-        html.dark .shine-effect::after {
-             background: linear-gradient( to right, rgba(200, 200, 220, 0) 0%, rgba(200, 200, 220, 0.4) 50%, rgba(200, 200, 220, 0) 100% );
         }
         @keyframes wave-shine {
             0% { left: -50%; }
             20% { left: 150%; }
             100% { left: 150%; }
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
         #message-box {
             position: fixed;
@@ -65,7 +73,7 @@
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s, bottom 0.3s;
+            transition: all 0.3s;
         }
         #message-box.show {
             bottom: 20px;
@@ -74,54 +82,51 @@
         }
         #message-box.success { background-color: #28a745; }
         #message-box.error { background-color: #dc3545; }
-    </style>
-    <script>
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark')
-        } else {
-          document.documentElement.classList.remove('dark')
-        }
-    </script>
-</head>
-<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
 
-    <!-- Simplified Header -->
-    <header class="w-full bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg">
+        /* --- New Glowing Outline Effect --- */
+        .form-field {
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-field:hover {
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100">
+
+    <header class="w-full bg-gray-900/70 backdrop-blur-lg">
         <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4 border-b border-gray-200 dark:border-gray-800">
-                <a href="index.html" class="text-2xl font-bold text-gray-800 dark:text-white shine-effect">AgentOS</a>
-                <button id="theme-toggle" class="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
-                    <svg id="theme-icon-light" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                </button>
+            <div class="flex justify-between items-center py-4 border-b border-gray-800">
+                <a href="index.html" class="text-2xl font-bold text-white shine-effect">AgentOS</a>
+                <a href="index.html" class="text-gray-300 hover:text-blue-400 font-semibold">← Back to Home</a>
             </div>
         </div>
     </header>
 
     <main>
-        <!-- Recruitment Section -->
         <section id="recruit" class="py-24 text-center">
-            <div class="container mx-auto px-4">
-                <h1 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">Help Build the Future</h1>
-                <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-12">
+            <div class="container mx-auto px-4 fade-in">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 text-white">Help Build the Future</h1>
+                <p class="text-lg text-gray-400 max-w-2xl mx-auto mb-12">
                     We're looking for talented engineers and visionaries to help build the foundational OS for AI. If you're passionate about autonomous agents, we want to hear from you.
                 </p>
                 <form id="recruit-form" class="flex flex-col items-center gap-4 mt-6 max-w-xl mx-auto text-left">
                     <div class="w-full">
-                        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Your Name</label>
-                        <input id="name" type="text" required name="name" placeholder="Ada Lovelace" class="px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 text-lg w-full focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <label for="name" class="block text-sm font-medium text-gray-300 mb-1">Your Name</label>
+                        <input id="name" type="text" required name="name" placeholder="Ada Lovelace" class="form-field px-4 py-3 rounded-lg border border-gray-700 bg-gray-800/80 text-lg w-full focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     </div>
                     <div class="w-full">
-                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Your Email</label>
-                        <input id="email" type="email" required name="email" placeholder="ada@example.com" class="px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 text-lg w-full focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Your Email</label>
+                        <input id="email" type="email" required name="email" placeholder="ada@example.com" class="form-field px-4 py-3 rounded-lg border border-gray-700 bg-gray-800/80 text-lg w-full focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     </div>
                     <div class="w-full">
-                        <label for="link" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">GitHub, LinkedIn, or Portfolio URL</label>
-                        <input id="link" type="url" name="link" placeholder="https://github.com/ada" class="px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 text-lg w-full focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <label for="link" class="block text-sm font-medium text-gray-300 mb-1">GitHub, LinkedIn, or Portfolio URL</label>
+                        <input id="link" type="url" name="link" placeholder="https://github.com/ada" class="form-field px-4 py-3 rounded-lg border border-gray-700 bg-gray-800/80 text-lg w-full focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     </div>
                     <div class="w-full">
-                        <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Why are you interested in AgentOS?</label>
-                        <textarea id="message" name="message" rows="4" class="px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 text-lg w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                        <label for="message" class="block text-sm font-medium text-gray-300 mb-1">Why are you interested in AgentOS?</label>
+                        <textarea id="message" name="message" rows="4" class="form-field px-4 py-3 rounded-lg border border-gray-700 bg-gray-800/80 text-lg w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
                     </div>
                     <button type="submit" class="cta-button bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg text-lg w-full sm:w-auto mt-4">I'm Interested</button>
                 </form>
@@ -129,7 +134,7 @@
         </section>
     </main>
 
-    <footer class="bg-gray-800 dark:bg-black text-gray-400">
+    <footer class="bg-black text-gray-400">
         <div class="container mx-auto px-4 py-12 text-center">
             <p>&copy; 2025 AgentOS. The OS for the Third User.</p>
         </div>
@@ -137,31 +142,25 @@
 
     <div id="message-box"></div>
 
-    <!-- Firebase SDK -->
+    <script src="./firebase-config.js"></script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { firebaseConfig } from './firebase-config.js';
-        // IMPORTANT: Replace this with your actual Firebase config object
+        
+        window.db = null;
+        try {
+            const app = initializeApp(firebaseConfig);
+            window.db = getFirestore(app);
+            console.log("Firebase Initialized Successfully");
+        } catch (e) {
+            console.error("Firebase initialization error:", e);
+        }
 
-
-        window.initializeAppFirebase = () => {
-            try {
-                const app = initializeApp(firebaseConfig);
-                window.db = getFirestore(app);
-                console.log("Firebase Initialized Successfully");
-            } catch (e) {
-                console.error("Firebase initialization error:", e);
-                if (e.code === 'duplicate-app') {
-                    console.log("Firebase app already initialized.");
-                }
-            }
-        };
-
-        window.handleRecruitSubmit = async (event) => {
+        async function handleRecruitSubmit(event) {
             event.preventDefault();
             if (!window.db) {
-                window.showMessage('Backend not ready. Please try again.', 'error');
+                showMessage('Backend not ready. Please try again.', 'error');
                 return;
             }
 
@@ -181,7 +180,7 @@
             };
 
             if (!formData.name || !formData.email) {
-                window.showMessage('Please fill in your name and email.', 'error');
+                showMessage('Please fill in your name and email.', 'error');
                 return;
             }
 
@@ -190,18 +189,18 @@
 
             try {
                 await addDoc(collection(window.db, "recruits"), formData);
-                window.showMessage('Thank you for your interest! We will be in touch.', 'success');
+                showMessage('Thank you! We will be in touch.', 'success');
                 form.reset();
             } catch (e) {
                 console.error("Error adding document: ", e);
-                window.showMessage('Something went wrong. Please try again.', 'error');
+                showMessage('Something went wrong. Please try again.', 'error');
             } finally {
                 submitButton.disabled = false;
                 submitButton.textContent = "I'm Interested";
             }
-        };
+        }
         
-        window.showMessage = (message, type = 'success') => {
+        function showMessage(message, type = 'success') {
             const messageBox = document.getElementById('message-box');
             if(!messageBox) return;
             messageBox.textContent = message;
@@ -209,42 +208,21 @@
             setTimeout(() => {
                 messageBox.className = messageBox.className.replace('show', '');
             }, 3000);
-        };
-    </script>
+        }
 
-    <script>
         document.addEventListener('DOMContentLoaded', () => {
-            if (typeof window.initializeAppFirebase === 'function') {
-                window.initializeAppFirebase();
-            }
-            
             const recruitForm = document.getElementById('recruit-form');
-            if(recruitForm) recruitForm.addEventListener('submit', window.handleRecruitSubmit);
-
-            const themeToggle = document.getElementById('theme-toggle');
-            const lightIcon = document.getElementById('theme-icon-light');
-            const darkIcon = document.getElementById('theme-icon-dark');
-
-            if (themeToggle) {
-                if (document.documentElement.classList.contains('dark')) {
-                    darkIcon.classList.remove('hidden');
-                    lightIcon.classList.add('hidden');
-                } else {
-                    lightIcon.classList.remove('hidden');
-                    darkIcon.classList.add('hidden');
-                }
-
-                themeToggle.addEventListener('click', () => {
-                    document.documentElement.classList.toggle('dark');
-                    lightIcon.classList.toggle('hidden');
-                    darkIcon.classList.toggle('hidden');
-                    if (document.documentElement.classList.contains('dark')) {
-                        localStorage.setItem('theme', 'dark');
-                    } else {
-                        localStorage.setItem('theme', 'light');
+            if(recruitForm) recruitForm.addEventListener('submit', handleRecruitSubmit);
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                       entry.target.classList.add('visible');
                     }
                 });
-            }
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
         });
     </script>
 </body>
