@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en" class="dark"> <!-- Default to dark mode -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Vision - OSAgent Roadmap</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-accent: #007BFF;
+            --purple-accent: #5b21b6;
+            --background-dark: #030712;
+            --glow-color: rgba(0, 123, 255, 0.7);
+        }
+        html.dark {
+            color-scheme: dark;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-dark);
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 4rem 4rem; /* Larger pattern */
+            background-attachment: fixed; /* Creates parallax effect */
+        }
+        
+        /* --- Logo Animation Styles --- */
+        #logo {
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            width: 10rem;
+            position: relative;
+        }
+        #logo-os, #logo-agent {
+            position: absolute;
+        }
+        #logo-os { left: 0; z-index: 10; }
+        #logo-agent { left: 2.25rem; z-index: 5; }
+        @keyframes move-os {
+            0% { left: 0; transform: scale(1); opacity: 1; z-index: 10; }
+            50% { transform: scale(0.85); opacity: 0.7; }
+            100% { left: 4.5rem; transform: scale(1); opacity: 1; z-index: -1; }
+        }
+        @keyframes move-agent {
+            from { left: 2.25rem; }
+            to { left: 0; }
+        }
+        .animate-logo #logo-os { animation: move-os 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards; }
+        .animate-logo #logo-agent { animation: move-agent 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards; }
+
+        /* --- Roadmap Styles --- */
+        .roadmap-container {
+            position: relative;
+            padding: 4rem 0;
+        }
+        .roadmap-path {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 100%;
+            width: 4px;
+            background-image: linear-gradient(to bottom, var(--primary-accent), var(--purple-accent));
+            transform-origin: top;
+            transition: transform 1s ease-out;
+            transform: scaleY(0);
+        }
+
+        .roadmap-item {
+            position: relative;
+            margin-bottom: 8rem;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+        }
+        .roadmap-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .roadmap-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .quest-point {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+        .quest-orb {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(45deg, var(--primary-accent), var(--purple-accent));
+            background-size: 200% 200%;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 15px var(--glow-color), inset 0 0 5px rgba(255,255,255,0.5);
+            animation: pulse-orb 2s infinite, gradient-shift 6s ease infinite;
+            transition: transform 0.3s ease;
+        }
+        .roadmap-item.active .quest-orb {
+             transform: scale(1.2);
+        }
+        @keyframes pulse-orb {
+            0% { box-shadow: 0 0 15px rgba(75, 0, 130, 0.5), 0 0 15px rgba(0, 123, 255, 0.5), inset 0 0 5px rgba(255,255,255,0.5); }
+            50% { box-shadow: 0 0 25px rgba(75, 0, 130, 0.7), 0 0 25px rgba(0, 123, 255, 0.7), inset 0 0 8px rgba(255,255,255,0.8); }
+            100% { box-shadow: 0 0 15px rgba(75, 0, 130, 0.5), 0 0 15px rgba(0, 123, 255, 0.5), inset 0 0 5px rgba(255,255,255,0.5); }
+        }
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .quest-info {
+            width: calc(50% - 4rem);
+            position: relative;
+            transition: transform 0.5s ease-in-out; /* Added for smooth scaling */
+        }
+        
+        /* Active state scaling */
+        .roadmap-item.active .quest-info {
+            transform: scale(1.05);
+        }
+        
+        /* Alternating sides for desktop */
+        .roadmap-item:nth-child(odd) .quest-info {
+            margin-left: calc(50% + 4rem);
+            text-align: left;
+            transform-origin: left center;
+        }
+        .roadmap-item:nth-child(even) .quest-info {
+            margin-right: calc(50% + 4rem);
+            text-align: right;
+            transform-origin: right center;
+        }
+
+        /* Connector line for desktop */
+        .quest-info::before {
+            content: '';
+            position: absolute;
+            top: 9px; /* Vertically center with the orb */
+            width: 4rem;
+            height: 2px;
+            background-color: rgba(0, 123, 255, 0.5);
+        }
+        .roadmap-item:nth-child(odd) .quest-info::before {
+            left: -4rem;
+        }
+        .roadmap-item:nth-child(even) .quest-info::before {
+            right: -4rem;
+        }
+        
+        /* Responsive styles for mobile */
+        @media (max-width: 768px) {
+            .roadmap-path {
+                left: 1rem;
+            }
+            .quest-point {
+                left: 1rem;
+            }
+            .quest-info {
+                width: calc(100% - 3rem);
+                margin-left: 3rem;
+                text-align: left !important;
+                transform-origin: left center !important;
+            }
+            .roadmap-item:nth-child(even) .quest-info {
+                margin-right: 0;
+            }
+            .quest-info::before {
+                left: -2rem !important;
+                width: 2rem;
+                right: auto;
+            }
+        }
+
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100">
+
+    <header class="sticky top-0 z-50 w-full bg-gray-900/70 backdrop-blur-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4 border-b border-gray-800">
+                <a href="index.html" id="logo" class="relative text-2xl font-bold text-white h-8 flex items-center">
+                    <span id="logo-os">OS</span>
+                    <span id="logo-agent">Agent</span>
+                </a>
+                <a href="index.html" class="text-gray-300 hover:text-blue-400 font-semibold">← Back to Home</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="py-24 text-center">
+            <div class="container mx-auto px-4">
+                <h1 class="text-4xl md:text-6xl font-bold mb-4 text-white">A Look Under the Hood</h1>
+                <p class="text-lg text-gray-400 max-w-3xl mx-auto mb-24">
+                    You're here because you're curious about what makes AgentOS different. The short answer is that we are building a system for true, general-purpose AI autonomy. The long answer starts with a simple premise: AI agents are blind, and we are giving them sight.
+                </p>
+            </div>
+
+            <div class="roadmap-container container mx-auto px-4">
+                <div class="roadmap-path" id="roadmap-path"></div>
+                
+                <!-- Item 1 -->
+                <div class="roadmap-item">
+                    <div class="quest-point"><div class="quest-orb"></div></div>
+                    <div class="quest-info">
+                        <h3 class="text-2xl font-bold text-white mb-1">The Foundation</h3>
+                        <p class="text-sm text-blue-400 mb-3">A Virtual Layer for AI</p>
+                        <p class="text-gray-400">AgentOS creates a virtual orchestration layer that sits on top of your current OS. It's a flight simulator for AI, providing a stable, isolated world where agents can be born, learn, and carry out their missions without interfering with your work.</p>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="roadmap-item">
+                    <div class="quest-point"><div class="quest-orb"></div></div>
+                    <div class="quest-info">
+                        <h3 class="text-2xl font-bold text-white mb-1">The Senses</h3>
+                        <p class="text-sm text-blue-400 mb-3">How an Agent Sees the World</p>
+                        <p class="text-gray-400">Our PerceptionController acts as a flawless "retina," accessing raw pixel data from the graphics pipeline. It doesn't take screenshots; it sees the screen as a perfect numerical array—the same ground-truth reality the OS uses to render the display.</p>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="roadmap-item">
+                    <div class="quest-point"><div class="quest-orb"></div></div>
+                    <div class="quest-info">
+                        <h3 class="text-2xl font-bold text-white mb-1">The Mind</h3>
+                        <p class="text-sm text-blue-400 mb-3">How an Agent Thinks</p>
+                        <p class="text-gray-400">Powered by Gemini 1.5 Pro, the Brain operates in a continuous Observe, Think, Act loop. It analyzes visual data in the context of its mission and memory to reason about the single most logical action to take next.</p>
+                    </div>
+                </div>
+                
+                <!-- Item 4 -->
+                <div class="roadmap-item">
+                    <div class="quest-point"><div class="quest-orb"></div></div>
+                    <div class="quest-info">
+                        <h3 class="text-2xl font-bold text-white mb-1">The Body</h3>
+                        <p class="text-sm text-blue-400 mb-3">How an Agent Acts</p>
+                        <p class="text-gray-400">The RuntimeController translates the Brain's logical commands into physical events. It can move the mouse with perfect precision, type text, or scroll, making it universally compatible with any application.</p>
+                    </div>
+                </div>
+
+                <!-- Item 5 -->
+                <div class="roadmap-item">
+                    <div class="quest-point"><div class="quest-orb"></div></div>
+                    <div class="quest-info">
+                        <h3 class="text-2xl font-bold text-white mb-1">The Immune System</h3>
+                        <p class="text-sm text-blue-400 mb-3">How an Agent Heals</p>
+                        <p class="text-gray-400">When a failure occurs, our Debugging Alert System captures a detailed incident report. The full vision is a self-healing loop where a specialized DevAgent analyzes failures and writes a code-level patch to retry the mission.</p>
+                    </div>
+                </div>
+
+                <!-- Item 6 -->
+                <div class="roadmap-item">
+                    <div class="quest-point"><div class="quest-orb"></div></div>
+                    <div class="quest-info">
+                        <h3 class="text-2xl font-bold text-white mb-1">The Vision</h3>
+                        <p class="text-sm text-blue-400 mb-3">A Truly Agentic Workforce</p>
+                        <p class="text-gray-400">When these components come together, you get the foundation for an entire, autonomous AI workforce. A DirectorAgent can take a high-level goal and orchestrate a whole team of specialized agents to achieve it.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-black text-gray-400">
+        <div class="container mx-auto px-4 py-12 text-center">
+            <p>&copy; 2025 OSAgent. The OS for the Third User.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Logo Animation Trigger ---
+            setTimeout(() => {
+                const logo = document.getElementById('logo');
+                if (logo) {
+                    logo.classList.add('animate-logo');
+                }
+            }, 500);
+
+            // --- Roadmap Animation & Interaction Logic ---
+            const roadmapItems = document.querySelectorAll('.roadmap-item');
+            const roadmapPath = document.getElementById('roadmap-path');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Make the item visible
+                        entry.target.classList.add('visible');
+
+                        // Remove 'active' from all other items
+                        roadmapItems.forEach(item => {
+                            if (item !== entry.target) {
+                                item.classList.remove('active');
+                            }
+                        });
+                        // Add 'active' to the current item
+                        entry.target.classList.add('active');
+                        
+                        // Calculate how far down the path should be drawn
+                        const visibleItems = document.querySelectorAll('.roadmap-item.visible').length;
+                        const percentage = (visibleItems / roadmapItems.length) * 0.95; // *0.95 to not overshoot
+                        roadmapPath.style.transform = `translateX(-50%) scaleY(${percentage})`;
+                    }
+                });
+            }, { 
+                threshold: 0.6, // Trigger when 60% of the item is visible
+            });
+
+            roadmapItems.forEach(item => observer.observe(item));
+        });
+    </script>
+</body>
+</html>

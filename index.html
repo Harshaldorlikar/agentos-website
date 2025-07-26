@@ -14,7 +14,7 @@
             --primary-accent: #007BFF;
             --background-dark: #030712;
         }
-        html.dark { color-scheme: dark; }
+        html.dark { color-scheme: dark; scroll-behavior: smooth; }
         body { font-family: 'Inter', sans-serif; user-select: none; -webkit-user-select: none; }
         input, textarea { user-select: auto; -webkit-user-select: auto; }
         .cta-button { transition: transform 0.2s ease, box-shadow 0.2s ease; }
@@ -35,7 +35,7 @@
         .sticky-nav { transition: background-color 0.3s ease, box-shadow 0.3s ease; }
         
         /* Original Animated Gradient Background */
-        .animated-gradient { background: linear-gradient(-45deg, #1e3a8a, #3b0764, #5b21b6, #111827); background-size: 400% 400%; animation: gradient 15s ease infinite; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.4; }
+        .animated-gradient { background: linear-gradient(-45deg, #1e3a8a, #3b0764, #5b21b6, #111827); background-size: 400% 400%; animation: gradient 25s ease infinite; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.4; }
         @keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         #hero-canvas { 
@@ -166,6 +166,36 @@
             transform: translateY(0);
         }
 
+        /* --- Back to Top Button --- */
+        #back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: rgba(31, 41, 55, 0.8); /* bg-gray-800 with opacity */
+            backdrop-filter: blur(5px);
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+            z-index: 50;
+        }
+        #back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        #back-to-top:hover {
+            background-color: var(--primary-accent);
+        }
+
         @media (max-width: 768px) { .workflow-diagram { flex-direction: column; } .workflow-arrow { width: 2px; height: 50px; margin: 1rem 0; } .workflow-arrow::after { right: -4px; top: auto; bottom: -2px; transform: rotate(45deg); } .flow-animation { background: linear-gradient(to bottom, transparent, var(--primary-accent), transparent); animation: flow-vertical 4s linear infinite; } @keyframes flow-vertical { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } } }
     </style>
 </head>
@@ -174,21 +204,28 @@
     <!-- Sticky Navigation -->
     <header id="main-header" class="sticky top-0 z-50 w-full sticky-nav bg-gray-900/70 backdrop-blur-lg">
         <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4 border-b border-gray-800">
-                <!-- Updated Logo Structure -->
+            <div class="relative flex justify-between items-center py-4 border-b border-gray-800">
+                <!-- Logo -->
                 <div id="logo" class="relative text-2xl font-bold text-white h-8 flex items-center">
                     <span id="logo-os">OS</span>
                     <span id="logo-agent">Agent</span>
                 </div>
-                <nav class="hidden md:flex items-center space-x-8">
+
+                <!-- Centered Navigation for desktop -->
+                <nav class="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center space-x-10 text-sm">
                     <a href="#vision" class="text-gray-300 hover:text-blue-400">The Vision</a>
                     <a href="#demo" class="text-gray-300 hover:text-blue-400">How It Works</a>
                     <a href="#faq" class="text-gray-300 hover:text-blue-400">FAQ</a>
+                    <a href="#dig-deeper" class="text-gray-300 hover:text-blue-400">Dig Deeper</a>
                     <a href="contribute.html" class="text-gray-300 hover:text-blue-400">Contribute</a>
                 </nav>
-                <div class="hidden md:flex items-center gap-4">
-                    <a href="#join" class="cta-button bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg">Join Waitlist</a>
+
+                <!-- Right side button for desktop -->
+                <div class="hidden md:flex items-center ml-auto">
+                    <a href="#join" class="cta-button bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg text-sm">Join Waitlist</a>
                 </div>
+
+                <!-- Mobile Menu Button -->
                 <button id="mobile-menu-button" class="md:hidden text-gray-200">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
@@ -198,6 +235,7 @@
              <a href="#vision" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">The Vision</a>
             <a href="#demo" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">How It Works</a>
             <a href="#faq" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">FAQ</a>
+            <a href="#dig-deeper" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">Dig Deeper</a>
             <a href="contribute.html" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">Contribute</a>
             <a href="#join" class="block py-2 px-4 text-sm text-blue-500 font-semibold hover:bg-gray-800">Join Waitlist</a>
         </div>
@@ -230,26 +268,26 @@
         <section id="vision" class="py-24 bg-black">
             <div class="container mx-auto px-4">
                 <h2 class="text-4xl md:text-5xl font-bold text-center text-white mb-16 fade-in">What We’re Building</h2>
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     <div class="card-hover bg-gray-900 p-8 rounded-xl border border-gray-800 fade-in">
                         <div class="card-icon text-blue-500 mb-4"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div>
                         <h3 class="text-xl font-semibold mb-2">Ground-Truth Perception</h3>
-                        <p class="text-gray-400">A flawless "retina" for agents, accessing raw visual data to see the world as it truly is.</p>
+                        <p class="text-gray-400">A flawless “retina” for agents. Our agents see what a human sees — using raw screen pixels and live DOM data. It’s not scraping — it’s true visual understanding of UI in real time.</p>
                     </div>
                     <div class="card-hover bg-gray-900 p-8 rounded-xl border border-gray-800 fade-in" style="transition-delay: 150ms;">
                         <div class="card-icon text-blue-500 mb-4"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
-                        <h3 class="text-xl font-semibold mb-2">Autonomous Orchestration</h3>
-                        <p class="text-gray-400">An AI Director that plans missions and delegates tasks to a dynamic team of agents.</p>
+                        <h3 class="text-xl font-semibold mb-2">Agent-Level Autonomy</h3>
+                        <p class="text-gray-400">Each agent acts with full independence. Every agent thinks, perceives, and acts like a digital worker — with access to screen pixels, browser DOM, and native OS controls.</p>
                     </div>
                     <div class="card-hover bg-gray-900 p-8 rounded-xl border border-gray-800 fade-in" style="transition-delay: 300ms;">
-                        <div class="card-icon text-blue-500 mb-4"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg></div>
-                        <h3 class="text-xl font-semibold mb-2">Code-Generating DevAgents</h3>
-                        <p class="text-gray-400">A system that builds its own workforce, writing new agent code on the fly to solve novel problems.</p>
+                        <div class="card-icon text-blue-500 mb-4"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
+                        <h3 class="text-xl font-semibold mb-2">Visual Safety & Supervision</h3>
+                        <p class="text-gray-400">A human-like eye for critical decisions. Before risky actions like clicking “Post” or “Delete,” our Supervisor validates the UI visually using Gemini — preventing costly mistakes.</p>
                     </div>
                     <div class="card-hover bg-gray-900 p-8 rounded-xl border border-gray-800 fade-in" style="transition-delay: 450ms;">
-                        <div class="card-icon text-blue-500 mb-4"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
-                        <h3 class="text-xl font-semibold mb-2">Self-Healing Systems</h3>
-                        <p class="text-gray-400">An AI workforce with an immune system, capable of diagnosing, patching, and retrying failed tasks.</p>
+                        <div class="card-icon text-blue-500 mb-4"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg></div>
+                        <h3 class="text-xl font-semibold mb-2">Debugging & Recovery System</h3>
+                        <p class="text-gray-400">Every failure is a learning opportunity. If something breaks, AgentOS captures the full screen, DOM state, and reasoning logs — so agents (and humans) can analyze and retry intelligently.</p>
                     </div>
                 </div>
             </div>
@@ -268,6 +306,13 @@
                     <div class="workflow-arrow"><div class="flow-animation" style="animation-delay: 2s;"></div></div>
                     <div class="workflow-node" data-tooltip="The system's immune response detects, diagnoses, and automatically patches failures."><div class="node-icon" style="animation-delay: 1.5s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div><p class="node-label text-white">Heal</p></div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Dig Deeper Section -->
+        <section id="dig-deeper" class="py-16 bg-gray-900 text-center">
+            <div class="container mx-auto px-4 fade-in">
+                 <a href="vision.html" class="secondary-cta font-semibold px-8 py-3 rounded-lg text-lg inline-block">Dig Deeper</a>
             </div>
         </section>
         
@@ -338,11 +383,15 @@
         </div>
     </footer>
     
+    <button id="back-to-top">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+    </button>
+    
     <div id="message-box"></div>
     <div id="workflow-tooltip"></div> <!-- Tooltip element -->
 
     <script>
-      // Placeholder for Firebase config
+      // Placeholder for Firebase config. Replace this with your actual Firebase config.
       const firebaseConfig = {
         apiKey: "YOUR_API_KEY",
         authDomain: "YOUR_AUTH_DOMAIN",
@@ -362,7 +411,7 @@
         try {
             const app = initializeApp(firebaseConfig);
             window.db = getFirestore(app);
-            console.log("Firebase Initialized Successfully (using placeholder config)");
+            console.log("Firebase Initialized Successfully");
         } catch (e) {
             console.error("Firebase initialization error:", e);
         }
@@ -551,15 +600,8 @@
             // --- Logo Animation Trigger ---
             setTimeout(() => {
                 const logo = document.getElementById('logo');
-                const logoOs = document.getElementById('logo-os');
-                
-                if (logo && logoOs) {
+                if (logo) {
                     logo.classList.add('animate-logo');
-
-                    // Listen for the animation to end to apply the shine effect
-                    logoOs.addEventListener('animationend', () => {
-                        logo.classList.add('shine-effect');
-                    }, { once: true });
                 }
             }, 1500); // Delay animation for 1.5 seconds
 
@@ -601,6 +643,21 @@
                     node.addEventListener('mouseleave', () => {
                         tooltip.classList.remove('show');
                     });
+                });
+            }
+
+            // --- Back to Top Button Logic ---
+            const backToTopButton = document.getElementById('back-to-top');
+            if (backToTopButton) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 300) {
+                        backToTopButton.classList.add('show');
+                    } else {
+                        backToTopButton.classList.remove('show');
+                    }
+                });
+                backToTopButton.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
             }
         });
