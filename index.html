@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgentOS: The Operating System for the Third User</title>
+    <title>OSAgent: The Agent OS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -18,7 +18,11 @@
         body { font-family: 'Inter', sans-serif; user-select: none; -webkit-user-select: none; }
         input, textarea { user-select: auto; -webkit-user-select: auto; }
         .cta-button { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 123, 255, 0.2), 0 4px 6px -2px rgba(0, 123, 255, 0.1); }
+        /* Added a blue glow to the existing box-shadow on hover */
+        .cta-button:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 15px -3px rgba(0, 123, 255, 0.2), 0 4px 6px -2px rgba(0, 123, 255, 0.1), 0 0 20px rgba(0, 123, 255, 0.5); 
+        }
         .secondary-cta { background-color: transparent; border: 2px solid var(--primary-accent); color: var(--primary-accent); transition: all 0.3s ease; }
         .secondary-cta:hover { background-color: var(--primary-accent); color: #ffffff; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 123, 255, 0.2); }
         .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; }
@@ -29,26 +33,139 @@
         .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
         .fade-in.visible { opacity: 1; transform: translateY(0); }
         .sticky-nav { transition: background-color 0.3s ease, box-shadow 0.3s ease; }
+        
+        /* Original Animated Gradient Background */
         .animated-gradient { background: linear-gradient(-45deg, #1e3a8a, #3b0764, #5b21b6, #111827); background-size: 400% 400%; animation: gradient 15s ease infinite; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.4; }
         @keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.5; }
-        .hero-content { position: relative; z-index: 1; }
-        .shine-effect { position: relative; overflow: hidden; }
-        .shine-effect::after { content: ''; position: absolute; top: -50%; left: -50%; width: 20px; height: 200%; background: linear-gradient(to right, rgba(200, 200, 220, 0) 0%, rgba(200, 200, 220, 0.4) 50%, rgba(200, 200, 220, 0) 100%); transform: rotate(25deg); animation: wave-shine 8s ease-in-out infinite; animation-delay: 3s; }
-        @keyframes wave-shine { 0% { left: -50%; } 20% { left: 150%; } 100% { left: 150%; } }
+
+        #hero-canvas { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: 0; 
+            opacity: 0.5;
+        }
+        .hero-content { 
+            position: relative; 
+            z-index: 1; 
+        }
+
+        /* --- Logo Animation Styles --- */
+        #logo {
+            font-family: 'Inter', sans-serif;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            width: 10rem; /* Temporarily wider to prevent clipping during animation */
+            transition: width 0.5s ease; /* Smoothly transition width after animation */
+            position: relative;
+        }
+        #logo-os, #logo-agent {
+            position: absolute;
+        }
+        /* Initial State: OSAgent */
+        #logo-os {
+            left: 0;
+            z-index: 10;
+        }
+        #logo-agent {
+            left: 2.25rem; /* Approx width of "OS" + space */
+            z-index: 5;
+        }
+
+        /* Keyframe Animations for the refined effect */
+        @keyframes move-os {
+            0% {
+                left: 0;
+                transform: scale(1);
+                opacity: 1;
+                z-index: 10;
+            }
+            50% {
+                /* The "dull" state during travel */
+                transform: scale(0.85);
+                opacity: 0.7;
+            }
+            100% {
+                /* Final state with original opacity and scale */
+                left: 4.5rem; /* Adjusted final position */
+                transform: scale(1);
+                opacity: 1;
+                z-index: -1;
+            }
+        }
+
+        @keyframes move-agent {
+            from { left: 2.25rem; }
+            to { left: 0; }
+        }
+
+        /* Triggering the animation via class */
+        .animate-logo #logo-os {
+            animation: move-os 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+        .animate-logo #logo-agent {
+             animation: move-agent 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+        
+        /* --- New Glowing Outline Effect for Form Fields --- */
+        .form-field-glow {
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-field-glow:hover {
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+        }
+
         #message-box { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 8px; color: white; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s; }
         #message-box.show { bottom: 20px; opacity: 1; visibility: visible; }
         #message-box.success { background-color: #28a745; }
         #message-box.error { background-color: #dc3545; }
         .workflow-diagram { display: flex; justify-content: center; align-items: center; gap: 2rem; flex-wrap: wrap; }
         .workflow-node { display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
-        .node-icon { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--primary-accent); background-color: #1f2937; box-shadow: 0 0 15px rgba(0, 123, 255, 0.2); animation: pulse 2.5s infinite ease-in-out; }
+        .node-icon { 
+            width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--primary-accent); background-color: #1f2937; box-shadow: 0 0 15px rgba(0, 123, 255, 0.2); animation: pulse 2.5s infinite ease-in-out;
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Added transition for hover */
+        }
+        .workflow-node:hover .node-icon {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(0, 123, 255, 0.4);
+        }
         .node-label { margin-top: 1rem; font-weight: 600; }
         .workflow-arrow { position: relative; width: 50px; height: 2px; background-color: #9ca3af; }
         .workflow-arrow::after { content: ''; position: absolute; right: -2px; top: -4px; border: solid #9ca3af; border-width: 0 2px 2px 0; display: inline-block; padding: 4px; transform: rotate(-45deg); }
         .flow-animation { position: absolute; width: 100%; height: 100%; background: linear-gradient(to right, transparent, var(--primary-accent), transparent); animation: flow 4s linear infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes flow { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        
+        /* --- Styles for Interactive Tooltip --- */
+        #workflow-tooltip {
+            position: fixed;
+            background-color: #1f2937; /* bg-gray-800 */
+            color: #d1d5db; /* text-gray-300 */
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            border: 1px solid #4b5563; /* border-gray-600 */
+            max-width: 250px;
+            text-align: center;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px); /* Start slightly up to animate down */
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 60;
+            pointer-events: none; /* So it doesn't interfere with mouse events */
+        }
+        #workflow-tooltip.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
         @media (max-width: 768px) { .workflow-diagram { flex-direction: column; } .workflow-arrow { width: 2px; height: 50px; margin: 1rem 0; } .workflow-arrow::after { right: -4px; top: auto; bottom: -2px; transform: rotate(45deg); } .flow-animation { background: linear-gradient(to bottom, transparent, var(--primary-accent), transparent); animation: flow-vertical 4s linear infinite; } @keyframes flow-vertical { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } } }
     </style>
 </head>
@@ -58,11 +175,16 @@
     <header id="main-header" class="sticky top-0 z-50 w-full sticky-nav bg-gray-900/70 backdrop-blur-lg">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-4 border-b border-gray-800">
-                <div class="text-2xl font-bold text-white shine-effect">AgentOS</div>
+                <!-- Updated Logo Structure -->
+                <div id="logo" class="relative text-2xl font-bold text-white h-8 flex items-center">
+                    <span id="logo-os">OS</span>
+                    <span id="logo-agent">Agent</span>
+                </div>
                 <nav class="hidden md:flex items-center space-x-8">
                     <a href="#vision" class="text-gray-300 hover:text-blue-400">The Vision</a>
                     <a href="#demo" class="text-gray-300 hover:text-blue-400">How It Works</a>
                     <a href="#faq" class="text-gray-300 hover:text-blue-400">FAQ</a>
+                    <a href="contribute.html" class="text-gray-300 hover:text-blue-400">Contribute</a>
                 </nav>
                 <div class="hidden md:flex items-center gap-4">
                     <a href="#join" class="cta-button bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg">Join Waitlist</a>
@@ -76,20 +198,22 @@
              <a href="#vision" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">The Vision</a>
             <a href="#demo" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">How It Works</a>
             <a href="#faq" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">FAQ</a>
+            <a href="contribute.html" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">Contribute</a>
             <a href="#join" class="block py-2 px-4 text-sm text-blue-500 font-semibold hover:bg-gray-800">Join Waitlist</a>
         </div>
     </header>
 
     <main>
         <!-- Hero Section -->
-        <section class="relative text-center min-h-screen flex items-center justify-center overflow-hidden">
+        <section id="hero" class="relative text-center min-h-screen flex items-center justify-center overflow-hidden">
             <div class="animated-gradient"></div>
+            <!-- The canvas for the rotating spheres -->
             <canvas id="hero-canvas"></canvas>
             <div class="container mx-auto px-4 hero-content">
                 <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 fade-in">The First Operating System for the Third User.</h1>
                 <p class="max-w-3xl mx-auto text-lg text-gray-300 mb-10 fade-in" style="transition-delay: 150ms;">Humans built the web for human eyes. AgentOS is built for AI agents — enabling them to perceive, act, and evolve in our world.</p>
                 <form id="waitlist-form-hero" class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6 fade-in" style="transition-delay: 300ms;">
-                    <input type="email" required name="email" placeholder="you@future.com" class="px-4 py-3 rounded-lg border border-gray-700 bg-gray-800/80 text-lg w-full sm:w-auto max-w-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <input type="email" required name="email" placeholder="you@future.com" class="form-field-glow px-4 py-3 rounded-lg border border-gray-700 bg-gray-800/80 text-lg w-full sm:w-auto max-w-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     <button type="submit" class="cta-button bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg text-lg w-full sm:w-auto">Join the Waitlist</button>
                 </form>
             </div>
@@ -136,13 +260,13 @@
             <div class="container mx-auto px-4 fade-in">
                 <h2 class="text-4xl md:text-5xl font-bold text-center text-white mb-20">The Autonomous Loop</h2>
                 <div class="workflow-diagram">
-                    <div class="workflow-node"><div class="node-icon" style="animation-delay: 0s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div><p class="node-label text-white">Observe</p></div>
+                    <div class="workflow-node" data-tooltip="Agents perceive the world through a flawless 'retina', accessing raw visual data."><div class="node-icon" style="animation-delay: 0s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div><p class="node-label text-white">Observe</p></div>
                     <div class="workflow-arrow"><div class="flow-animation"></div></div>
-                    <div class="workflow-node"><div class="node-icon" style="animation-delay: 0.5s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg></div><p class="node-label text-white">Think</p></div>
+                    <div class="workflow-node" data-tooltip="The AI Director analyzes the data, forms a multi-step plan, and delegates tasks."><div class="node-icon" style="animation-delay: 0.5s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg></div><p class="node-label text-white">Think</p></div>
                     <div class="workflow-arrow"><div class="flow-animation" style="animation-delay: 1s;"></div></div>
-                    <div class="workflow-node"><div class="node-icon" style="animation-delay: 1s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></div><p class="node-label text-white">Act</p></div>
+                    <div class="workflow-node" data-tooltip="Specialized agents execute tasks, from simple clicks to complex code generation."><div class="node-icon" style="animation-delay: 1s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></div><p class="node-label text-white">Act</p></div>
                     <div class="workflow-arrow"><div class="flow-animation" style="animation-delay: 2s;"></div></div>
-                    <div class="workflow-node"><div class="node-icon" style="animation-delay: 1.5s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div><p class="node-label text-white">Heal</p></div>
+                    <div class="workflow-node" data-tooltip="The system's immune response detects, diagnoses, and automatically patches failures."><div class="node-icon" style="animation-delay: 1.5s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div><p class="node-label text-white">Heal</p></div>
                 </div>
             </div>
         </section>
@@ -162,7 +286,7 @@
                     We’re assembling a coalition of engineers, founders, and futurists to build the operating system for AI agents. Want in early?
                 </p>
                 <form id="waitlist-form-footer" class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6">
-                    <input type="email" required name="email" placeholder="you@future.com" class="px-4 py-3 rounded-lg border border-gray-700 bg-gray-800/80 text-lg w-full sm:w-auto max-w-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <input type="email" required name="email" placeholder="you@future.com" class="form-field-glow px-4 py-3 rounded-lg border border-gray-700 bg-gray-800/80 text-lg w-full sm:w-auto max-w-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     <button type="submit" class="cta-button bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg text-lg w-full sm:w-auto">Join the Waitlist</button>
                 </form>
             </div>
@@ -215,25 +339,30 @@
     </footer>
     
     <div id="message-box"></div>
+    <div id="workflow-tooltip"></div> <!-- Tooltip element -->
 
-    <!-- Load Firebase Config First -->
-    <!-- IMPORTANT: Create a file named 'firebase-config.js' in the same folder -->
-    <!-- and add your firebaseConfig object to it, like this: -->
-    <!-- const firebaseConfig = { apiKey: "...", ... }; -->
-    <script src="./firebase-config.js"></script>
+    <script>
+      // Placeholder for Firebase config
+      const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
+      };
+    </script>
 
     <!-- Main Application Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // The firebaseConfig object is now available globally from the script above
-        
         window.db = null;
         try {
             const app = initializeApp(firebaseConfig);
             window.db = getFirestore(app);
-            console.log("Firebase Initialized Successfully");
+            console.log("Firebase Initialized Successfully (using placeholder config)");
         } catch (e) {
             console.error("Firebase initialization error:", e);
         }
@@ -267,7 +396,7 @@
                 emailInput.value = '';
             } catch (e) {
                 console.error("Error adding document: ", e);
-                showMessage('Something went wrong. Please try again.', 'error');
+                showMessage('Could not submit. Check console for details.', 'error');
             } finally {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Join the Waitlist';
@@ -284,7 +413,6 @@
             }, 3000);
         }
 
-        // Attach listeners after the DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             const heroForm = document.getElementById('waitlist-form-hero');
             if(heroForm) heroForm.addEventListener('submit', handleWaitlistSubmit);
@@ -296,6 +424,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Mobile menu toggle
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
             if(mobileMenuButton && mobileMenu) {
@@ -309,6 +438,7 @@
                 });
             }
 
+            // Sticky header shadow
             const header = document.getElementById('main-header');
             if(header) {
                 window.addEventListener('scroll', () => {
@@ -320,6 +450,7 @@
                 });
             }
 
+            // FAQ accordion
             document.querySelectorAll('.faq-question').forEach(button => {
                 button.addEventListener('click', () => {
                     const answer = button.nextElementSibling;
@@ -331,6 +462,7 @@
                 });
             });
 
+            // Fade-in animations on scroll
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
@@ -341,11 +473,15 @@
 
             document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
+            // --- Three.js Canvas Animation ---
             let scene, camera, renderer, baseSphere, agentLayer;
 
             function initThree() {
                 const canvas = document.getElementById('hero-canvas');
-                if (!canvas || !THREE) return;
+                if (!canvas || typeof THREE === 'undefined') {
+                    console.error("Three.js or canvas not found");
+                    return;
+                };
 
                 const container = canvas.parentElement;
                 scene = new THREE.Scene();
@@ -354,6 +490,7 @@
                 renderer.setSize(container.clientWidth, container.clientHeight);
                 renderer.setPixelRatio(window.devicePixelRatio);
 
+                // The central sphere
                 const baseGeometry = new THREE.SphereGeometry(1, 32, 32);
                 const baseMaterial = new THREE.MeshStandardMaterial({ 
                     color: 0x334155,
@@ -363,6 +500,7 @@
                 baseSphere = new THREE.Mesh(baseGeometry, baseMaterial);
                 scene.add(baseSphere);
 
+                // The outer wireframe layer
                 const agentGeometry = new THREE.IcosahedronGeometry(1.5, 1);
                 const agentMaterial = new THREE.MeshStandardMaterial({ 
                     color: 0x3b82f6,
@@ -373,6 +511,7 @@
                 agentLayer = new THREE.Mesh(agentGeometry, agentMaterial);
                 scene.add(agentLayer);
 
+                // Lighting
                 const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
                 scene.add(ambientLight);
                 const pointLight = new THREE.PointLight(0xffffff, 1.2);
@@ -406,7 +545,64 @@
 
             window.addEventListener('resize', onWindowResize, false);
             
+            // Initialize Three.js after the rest of the DOM content has been parsed
             initThree();
+
+            // --- Logo Animation Trigger ---
+            setTimeout(() => {
+                const logo = document.getElementById('logo');
+                const logoOs = document.getElementById('logo-os');
+                
+                if (logo && logoOs) {
+                    logo.classList.add('animate-logo');
+
+                    // Listen for the animation to end to apply the shine effect
+                    logoOs.addEventListener('animationend', () => {
+                        logo.classList.add('shine-effect');
+                    }, { once: true });
+                }
+            }, 1500); // Delay animation for 1.5 seconds
+
+            // --- Interactive Workflow Tooltip Logic ---
+            const workflowNodes = document.querySelectorAll('.workflow-node');
+            const tooltip = document.getElementById('workflow-tooltip');
+
+            if (workflowNodes.length > 0 && tooltip) {
+                workflowNodes.forEach(node => {
+                    node.addEventListener('mouseenter', () => {
+                        const tooltipText = node.dataset.tooltip;
+                        if (!tooltipText) return;
+
+                        tooltip.textContent = tooltipText;
+                        tooltip.classList.add('show');
+
+                        const nodeRect = node.getBoundingClientRect();
+                        const tooltipRect = tooltip.getBoundingClientRect();
+
+                        // Position the tooltip below the node
+                        let top = nodeRect.bottom + 15; // 15px spacing below
+                        let left = nodeRect.left + (nodeRect.width / 2) - (tooltipRect.width / 2);
+
+                        // Prevent tooltip from going off-screen horizontally
+                        if (left < 10) left = 10;
+                        if (left + tooltipRect.width > window.innerWidth - 10) {
+                            left = window.innerWidth - tooltipRect.width - 10;
+                        }
+                        
+                        // If it goes off the bottom, show it above instead (fallback)
+                        if (top + tooltipRect.height > window.innerHeight - 10) {
+                            top = nodeRect.top - tooltipRect.height - 15;
+                        }
+
+                        tooltip.style.left = `${left}px`;
+                        tooltip.style.top = `${top}px`;
+                    });
+
+                    node.addEventListener('mouseleave', () => {
+                        tooltip.classList.remove('show');
+                    });
+                });
+            }
         });
     </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contribute to AgentOS</title>
+    <title>Contribute to OSAgent</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,28 +30,7 @@
         }
         .cta-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 123, 255, 0.2), 0 4px 6px -2px rgba(0, 123, 255, 0.1);
-        }
-        .shine-effect {
-            position: relative;
-            overflow: hidden;
-        }
-        .shine-effect::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 20px;
-            height: 200%;
-            background: linear-gradient( to right, rgba(200, 200, 220, 0) 0%, rgba(200, 200, 220, 0.4) 50%, rgba(200, 200, 220, 0) 100% );
-            transform: rotate(25deg);
-            animation: wave-shine 8s ease-in-out infinite;
-            animation-delay: 3s;
-        }
-        @keyframes wave-shine {
-            0% { left: -50%; }
-            20% { left: 150%; }
-            100% { left: 150%; }
+            box-shadow: 0 10px 15px -3px rgba(0, 123, 255, 0.2), 0 4px 6px -2px rgba(0, 123, 255, 0.1), 0 0 20px rgba(0, 123, 255, 0.5);
         }
         .fade-in {
             opacity: 0;
@@ -83,7 +62,7 @@
         #message-box.success { background-color: #28a745; }
         #message-box.error { background-color: #dc3545; }
 
-        /* --- New Glowing Outline Effect --- */
+        /* --- Glowing Outline Effect --- */
         .form-field {
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
@@ -91,14 +70,56 @@
             border-color: var(--primary-accent);
             box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
         }
+
+        /* --- Logo Animation Styles --- */
+        #logo {
+            font-family: 'Inter', sans-serif;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            width: 10rem; /* Temporarily wider to prevent clipping during animation */
+            transition: width 0.5s ease; /* Smoothly transition width after animation */
+            position: relative;
+        }
+        #logo-os, #logo-agent {
+            position: absolute;
+        }
+        /* Initial State: OSAgent */
+        #logo-os {
+            left: 0;
+            z-index: 10;
+        }
+        #logo-agent {
+            left: 2.25rem; /* Approx width of "OS" + space */
+            z-index: 5;
+        }
+        @keyframes move-os {
+            0% { left: 0; transform: scale(1); opacity: 1; z-index: 10; }
+            50% { transform: scale(0.85); opacity: 0.7; }
+            100% { left: 4.5rem; transform: scale(1); opacity: 1; z-index: -1; }
+        }
+        @keyframes move-agent {
+            from { left: 2.25rem; }
+            to { left: 0; }
+        }
+        .animate-logo #logo-os {
+            animation: move-os 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+        .animate-logo #logo-agent {
+             animation: move-agent 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100">
 
-    <header class="w-full bg-gray-900/70 backdrop-blur-lg">
+    <header class="sticky top-0 z-50 w-full bg-gray-900/70 backdrop-blur-lg">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-4 border-b border-gray-800">
-                <a href="index.html" class="text-2xl font-bold text-white shine-effect">AgentOS</a>
+                <div id="logo" class="relative text-2xl font-bold text-white h-8 flex items-center">
+                    <span id="logo-os">OS</span>
+                    <span id="logo-agent">Agent</span>
+                </div>
                 <a href="index.html" class="text-gray-300 hover:text-blue-400 font-semibold">← Back to Home</a>
             </div>
         </div>
@@ -125,7 +146,7 @@
                         <input id="link" type="url" name="link" placeholder="https://github.com/ada" class="form-field px-4 py-3 rounded-lg border border-gray-700 bg-gray-800/80 text-lg w-full focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     </div>
                     <div class="w-full">
-                        <label for="message" class="block text-sm font-medium text-gray-300 mb-1">Why are you interested in AgentOS?</label>
+                        <label for="message" class="block text-sm font-medium text-gray-300 mb-1">Why are you interested in OSAgent?</label>
                         <textarea id="message" name="message" rows="4" class="form-field px-4 py-3 rounded-lg border border-gray-700 bg-gray-800/80 text-lg w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
                     </div>
                     <button type="submit" class="cta-button bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg text-lg w-full sm:w-auto mt-4">I'm Interested</button>
@@ -136,7 +157,7 @@
 
     <footer class="bg-black text-gray-400">
         <div class="container mx-auto px-4 py-12 text-center">
-            <p>&copy; 2025 AgentOS. The OS for the Third User.</p>
+            <p>&copy; 2025 OSAgent. The OS for the Third User.</p>
         </div>
     </footer>
 
@@ -223,6 +244,14 @@
             }, { threshold: 0.1 });
 
             document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+            
+            // --- Logo Animation Trigger ---
+            setTimeout(() => {
+                const logo = document.getElementById('logo');
+                if (logo) {
+                    logo.classList.add('animate-logo');
+                }
+            }, 500); // Shorter delay for sub-pages
         });
     </script>
 </body>
