@@ -18,7 +18,6 @@
         body { font-family: 'Inter', sans-serif; user-select: none; -webkit-user-select: none; }
         input, textarea { user-select: auto; -webkit-user-select: auto; }
         .cta-button { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        /* Added a blue glow to the existing box-shadow on hover */
         .cta-button:hover { 
             transform: translateY(-2px); 
             box-shadow: 0 10px 15px -3px rgba(0, 123, 255, 0.2), 0 4px 6px -2px rgba(0, 123, 255, 0.1), 0 0 20px rgba(0, 123, 255, 0.5); 
@@ -34,8 +33,26 @@
         .fade-in.visible { opacity: 1; transform: translateY(0); }
         .sticky-nav { transition: background-color 0.3s ease, box-shadow 0.3s ease; }
         
-        /* Original Animated Gradient Background */
-        .animated-gradient { background: linear-gradient(-45deg, #1e3a8a, #3b0764, #5b21b6, #111827); background-size: 400% 400%; animation: gradient 25s ease infinite; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.4; }
+        .bg-gray-900 {
+            background-color: #1a1229 !important; /* Dark Violet */
+        }
+        .bg-black {
+            background-color: #0f0b19 !important; /* Deeper Violet */
+        }
+        
+        .animated-gradient { 
+            background: linear-gradient(-45deg, #3c1677, #4a1a94, #2a0546, #1e1235); 
+            background-size: 400% 400%; 
+            animation: gradient 25s ease infinite; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: -1; 
+            opacity: 0.7;
+        }
+
         @keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         #hero-canvas { 
@@ -59,51 +76,30 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
-            width: 10rem; /* Temporarily wider to prevent clipping during animation */
-            transition: width 0.5s ease; /* Smoothly transition width after animation */
+            width: 10rem; 
+            transition: width 0.5s ease;
             position: relative;
         }
         #logo-os, #logo-agent {
             position: absolute;
         }
-        /* Initial State: OSAgent */
         #logo-os {
             left: 0;
             z-index: 10;
         }
         #logo-agent {
-            left: 2.25rem; /* Approx width of "OS" + space */
+            left: 2.25rem;
             z-index: 5;
         }
-
-        /* Keyframe Animations for the refined effect */
         @keyframes move-os {
-            0% {
-                left: 0;
-                transform: scale(1);
-                opacity: 1;
-                z-index: 10;
-            }
-            50% {
-                /* The "dull" state during travel */
-                transform: scale(0.85);
-                opacity: 0.7;
-            }
-            100% {
-                /* Final state with original opacity and scale */
-                left: 4.5rem; /* Adjusted final position */
-                transform: scale(1);
-                opacity: 1;
-                z-index: -1;
-            }
+            0% { left: 0; transform: scale(1); opacity: 1; z-index: 10; }
+            50% { transform: scale(0.85); opacity: 0.7; }
+            100% { left: 4.5rem; transform: scale(1); opacity: 1; z-index: -1; }
         }
-
         @keyframes move-agent {
             from { left: 2.25rem; }
             to { left: 0; }
         }
-
-        /* Triggering the animation via class */
         .animate-logo #logo-os {
             animation: move-os 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
         }
@@ -111,7 +107,6 @@
              animation: move-agent 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
         }
         
-        /* --- New Glowing Outline Effect for Form Fields --- */
         .form-field-glow {
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
@@ -128,7 +123,7 @@
         .workflow-node { display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
         .node-icon { 
             width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--primary-accent); background-color: #1f2937; box-shadow: 0 0 15px rgba(0, 123, 255, 0.2); animation: pulse 2.5s infinite ease-in-out;
-            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Added transition for hover */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .workflow-node:hover .node-icon {
             transform: scale(1.1);
@@ -141,24 +136,23 @@
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes flow { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
         
-        /* --- Styles for Interactive Tooltip --- */
         #workflow-tooltip {
             position: fixed;
-            background-color: #1f2937; /* bg-gray-800 */
-            color: #d1d5db; /* text-gray-300 */
+            background-color: #1f2937;
+            color: #d1d5db;
             padding: 0.75rem 1.25rem;
             border-radius: 0.5rem;
-            border: 1px solid #4b5563; /* border-gray-600 */
+            border: 1px solid #4b5563;
             max-width: 250px;
             text-align: center;
             font-size: 0.875rem;
             line-height: 1.5;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(-10px); /* Start slightly up to animate down */
+            transform: translateY(-10px);
             transition: opacity 0.3s ease, transform 0.3s ease;
             z-index: 60;
-            pointer-events: none; /* So it doesn't interfere with mouse events */
+            pointer-events: none;
         }
         #workflow-tooltip.show {
             opacity: 1;
@@ -166,12 +160,11 @@
             transform: translateY(0);
         }
 
-        /* --- Back to Top Button --- */
         #back-to-top {
             position: fixed;
             bottom: 2rem;
             right: 2rem;
-            background-color: rgba(31, 41, 55, 0.8); /* bg-gray-800 with opacity */
+            background-color: rgba(31, 41, 55, 0.8);
             backdrop-filter: blur(5px);
             color: white;
             width: 3rem;
@@ -298,13 +291,13 @@
             <div class="container mx-auto px-4 fade-in">
                 <h2 class="text-4xl md:text-5xl font-bold text-center text-white mb-20">The Autonomous Loop</h2>
                 <div class="workflow-diagram">
-                    <div class="workflow-node" data-tooltip="Agents perceive the world through a flawless 'retina', accessing raw visual data."><div class="node-icon" style="animation-delay: 0s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div><p class="node-label text-white">Observe</p></div>
+                    <div class="workflow-node" data-tooltip="Sees the screen with a ground-truth &quot;retina&quot; for a perfect, real-time view of any application."><div class="node-icon" style="animation-delay: 0s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div><p class="node-label text-white">Observe</p></div>
                     <div class="workflow-arrow"><div class="flow-animation"></div></div>
-                    <div class="workflow-node" data-tooltip="The AI Director analyzes the data, forms a multi-step plan, and delegates tasks."><div class="node-icon" style="animation-delay: 0.5s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg></div><p class="node-label text-white">Think</p></div>
+                    <div class="workflow-node" data-tooltip="The AI Brain analyzes what it sees and reasons about the next best action to achieve its mission."><div class="node-icon" style="animation-delay: 0.5s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg></div><p class="node-label text-white">Think</p></div>
                     <div class="workflow-arrow"><div class="flow-animation" style="animation-delay: 1s;"></div></div>
-                    <div class="workflow-node" data-tooltip="Specialized agents execute tasks, from simple clicks to complex code generation."><div class="node-icon" style="animation-delay: 1s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></div><p class="node-label text-white">Act</p></div>
+                    <div class="workflow-node" data-tooltip="Hybrid controllers execute the Brain's decision using precise web actions or universal OS control."><div class="node-icon" style="animation-delay: 1s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></div><p class="node-label text-white">Act</p></div>
                     <div class="workflow-arrow"><div class="flow-animation" style="animation-delay: 2s;"></div></div>
-                    <div class="workflow-node" data-tooltip="The system's immune response detects, diagnoses, and automatically patches failures."><div class="node-icon" style="animation-delay: 1.5s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div><p class="node-label text-white">Heal</p></div>
+                    <div class="workflow-node" data-tooltip="Logs the full context of any failure, creating the foundation for future autonomous self-repair."><div class="node-icon" style="animation-delay: 1.5s;"><svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div><p class="node-label text-white">Heal</p></div>
                 </div>
             </div>
         </section>
@@ -368,7 +361,37 @@
                             <svg class="w-6 h-6 shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer hidden p-6 pt-0 text-gray-400">
-                            <p>Traditional automation relies on brittle, hardcoded selectors or scripts. AgentOS is dynamic. Its agents perceive the screen visually and make decisions in real-time. When a UI changes, our Self-Healing system can automatically diagnose the problem and generate a fix.</p>
+                            <p>The difference is that AgentOS doesn't just follow a script; it perceives, reasons, and adapts. While traditional automation relies on brittle code that breaks with any UI change, our agents use a "vision-first" approach to see the screen like a human. This allows them to make intelligent, real-time decisions to complete a mission, even on unfamiliar interfaces.</p>
+                        </div>
+                    </div>
+                    <!-- NEW FAQ ITEM 1 -->
+                    <div class="faq-item bg-gray-800 border border-gray-700 rounded-lg">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-6">
+                            <span class="text-lg font-semibold">Is a "vision-first" approach actually reliable?</span>
+                            <svg class="w-6 h-6 shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer hidden p-6 pt-0 text-gray-400">
+                            <p>Yes, because it's a hybrid system. For standard web tasks, our agents use the underlying DOM structure for surgical precision, just like traditional automation. But when they encounter a non-standard application, an OS-level pop-up, or a broken website, our ground-truth visual perception acts as a powerful and universal fallback. This hybrid model combines the reliability of structured data with the universal applicability of human-like sight, making our agents far more resilient than any single-method system.</p>
+                        </div>
+                    </div>
+                    <!-- NEW FAQ ITEM 2 -->
+                    <div class="faq-item bg-gray-800 border border-gray-700 rounded-lg">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-6">
+                            <span class="text-lg font-semibold">Who is the first user for AgentOS?</span>
+                            <svg class="w-6 h-6 shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer hidden p-6 pt-0 text-gray-400">
+                            <p>Our first user is the "solo digital operator"—the founder, creator, or freelancer who is buried in repetitive digital work. We are starting by giving them a tool to build and deploy their own small AI workforce to automate high-value, time-consuming tasks like content repurposing, market research, and lead generation. We're solving our own problem first.</p>
+                        </div>
+                    </div>
+                    <!-- NEW FAQ ITEM 3 -->
+                    <div class="faq-item bg-gray-800 border border-gray-700 rounded-lg">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-6">
+                            <span class="text-lg font-semibold">Is this just a local desktop application? What is the long-term plan?</span>
+                            <svg class="w-6 h-6 shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer hidden p-6 pt-0 text-gray-400">
+                            <p>AgentOS begins as a local-first desktop application to ensure user privacy and control. The long-term vision is a full B2B cloud platform. This will allow companies to build, deploy, and manage secure, 24/7 autonomous AI workforces to handle complex internal workflows, creating a new standard for enterprise automation.</p>
                         </div>
                     </div>
                 </div>
@@ -529,7 +552,6 @@
                 renderer.setSize(container.clientWidth, container.clientHeight);
                 renderer.setPixelRatio(window.devicePixelRatio);
 
-                // The central sphere
                 const baseGeometry = new THREE.SphereGeometry(1, 32, 32);
                 const baseMaterial = new THREE.MeshStandardMaterial({ 
                     color: 0x334155,
@@ -539,7 +561,6 @@
                 baseSphere = new THREE.Mesh(baseGeometry, baseMaterial);
                 scene.add(baseSphere);
 
-                // The outer wireframe layer
                 const agentGeometry = new THREE.IcosahedronGeometry(1.5, 1);
                 const agentMaterial = new THREE.MeshStandardMaterial({ 
                     color: 0x3b82f6,
@@ -550,7 +571,6 @@
                 agentLayer = new THREE.Mesh(agentGeometry, agentMaterial);
                 scene.add(agentLayer);
 
-                // Lighting
                 const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
                 scene.add(ambientLight);
                 const pointLight = new THREE.PointLight(0xffffff, 1.2);
@@ -584,46 +604,39 @@
 
             window.addEventListener('resize', onWindowResize, false);
             
-            // Initialize Three.js after the rest of the DOM content has been parsed
             initThree();
 
-            // --- Logo Animation Trigger ---
             setTimeout(() => {
                 const logo = document.getElementById('logo');
                 if (logo) {
                     logo.classList.add('animate-logo');
                 }
-            }, 1500); // Delay animation for 1.5 seconds
+            }, 1500);
 
-            // --- Interactive Workflow Tooltip Logic ---
             const workflowNodes = document.querySelectorAll('.workflow-node');
             const tooltip = document.getElementById('workflow-tooltip');
 
             if (workflowNodes.length > 0 && tooltip) {
                 workflowNodes.forEach(node => {
-                    node.addEventListener('mouseenter', () => {
+                    node.addEventListener('mouseenter', (e) => {
                         const tooltipText = node.dataset.tooltip;
                         if (!tooltipText) return;
 
                         tooltip.textContent = tooltipText;
                         tooltip.classList.add('show');
-
-                        const nodeRect = node.getBoundingClientRect();
-                        const tooltipRect = tooltip.getBoundingClientRect();
-
-                        // Position the tooltip below the node
-                        let top = nodeRect.bottom + 15; // 15px spacing below
-                        let left = nodeRect.left + (nodeRect.width / 2) - (tooltipRect.width / 2);
-
-                        // Prevent tooltip from going off-screen horizontally
-                        if (left < 10) left = 10;
-                        if (left + tooltipRect.width > window.innerWidth - 10) {
-                            left = window.innerWidth - tooltipRect.width - 10;
-                        }
                         
-                        // If it goes off the bottom, show it above instead (fallback)
-                        if (top + tooltipRect.height > window.innerHeight - 10) {
-                            top = nodeRect.top - tooltipRect.height - 15;
+                        const nodeRect = node.getBoundingClientRect();
+                        
+                        // Position tooltip relative to the viewport
+                        let top = e.clientY + 20;
+                        let left = e.clientX - (tooltip.offsetWidth / 2);
+
+                        if (left < 10) left = 10;
+                        if (left + tooltip.offsetWidth > window.innerWidth - 10) {
+                            left = window.innerWidth - tooltip.offsetWidth - 10;
+                        }
+                        if (top + tooltip.offsetHeight > window.innerHeight - 10) {
+                            top = e.clientY - tooltip.offsetHeight - 20;
                         }
 
                         tooltip.style.left = `${left}px`;
@@ -636,7 +649,6 @@
                 });
             }
 
-            // --- Back to Top Button Logic ---
             const backToTopButton = document.getElementById('back-to-top');
             if (backToTopButton) {
                 window.addEventListener('scroll', () => {
