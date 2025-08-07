@@ -24,6 +24,9 @@
             background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
             background-size: 4rem 4rem; /* Larger pattern */
             background-attachment: fixed; /* Creates parallax effect */
+            user-select: none; /* Standard syntax */
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10+ */
         }
         
         /* --- Logo Animation Styles --- */
@@ -54,7 +57,7 @@
         /* --- Roadmap Styles --- */
         .roadmap-container {
             position: relative;
-            padding: 4rem 0;
+            padding: 4rem 1rem;
         }
         .roadmap-path {
             position: absolute;
@@ -102,7 +105,7 @@
             animation: pulse-orb 2s infinite, gradient-shift 6s ease infinite;
             transition: transform 0.3s ease;
         }
-        .roadmap-item.active .quest-orb {
+        .roadmap-item:hover .quest-orb {
              transform: scale(1.2);
         }
         @keyframes pulse-orb {
@@ -122,8 +125,8 @@
             transition: transform 0.5s ease-in-out; /* Added for smooth scaling */
         }
         
-        /* Active state scaling */
-        .roadmap-item.active .quest-info {
+        /* Hover state scaling */
+        .roadmap-item:hover .quest-info {
             transform: scale(1.05);
         }
         
@@ -157,25 +160,27 @@
         
         /* Responsive styles for mobile */
         @media (max-width: 768px) {
-            .roadmap-path {
-                left: 1rem;
-            }
-            .quest-point {
-                left: 1rem;
-            }
             .quest-info {
-                width: calc(100% - 3rem);
-                margin-left: 3rem;
-                text-align: left !important;
-                transform-origin: left center !important;
+                width: calc(50% - 2.5rem);
+                font-size: 0.8rem;
+            }
+            .quest-info h3 {
+                font-size: 1.1rem;
+            }
+            .roadmap-item:nth-child(odd) .quest-info {
+                margin-left: calc(50% + 2.5rem);
             }
             .roadmap-item:nth-child(even) .quest-info {
-                margin-right: 0;
+                margin-right: calc(50% + 2.5rem);
             }
             .quest-info::before {
-                left: -2rem !important;
-                width: 2rem;
-                right: auto;
+                width: 2.5rem;
+            }
+            .roadmap-item:nth-child(odd) .quest-info::before {
+                left: -2.5rem;
+            }
+            .roadmap-item:nth-child(even) .quest-info::before {
+                right: -2.5rem;
             }
         }
 
@@ -185,13 +190,40 @@
 
     <header class="sticky top-0 z-50 w-full bg-gray-900/70 backdrop-blur-lg">
         <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4 border-b border-gray-800">
+            <div class="relative flex justify-between items-center py-4 border-b border-gray-800">
+                <!-- Logo -->
                 <a href="index.html" id="logo" class="relative text-2xl font-bold text-white h-8 flex items-center">
                     <span id="logo-os">OS</span>
                     <span id="logo-agent">Agent</span>
                 </a>
-                <a href="index.html" class="text-gray-300 hover:text-blue-400 font-semibold">← Back to Home</a>
+
+                <!-- Centered Navigation for desktop -->
+                <nav class="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center space-x-10 text-sm">
+                    <a href="index.html#vision" class="text-gray-300 hover:text-blue-400">The Vision</a>
+                    <a href="index.html#demo" class="text-gray-300 hover:text-blue-400">How It Works</a>
+                    <a href="index.html#faq" class="text-gray-300 hover:text-blue-400">FAQ</a>
+                    <a href="vision.html" class="text-gray-300 hover:text-blue-400">Dig Deeper</a>
+                    <a href="contribute.html" class="text-gray-300 hover:text-blue-400">Contribute</a>
+                </nav>
+
+                <!-- Right side button for desktop -->
+                <div class="hidden md:flex items-center ml-auto">
+                    <a href="index.html#join" class="cta-button bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg text-sm">Join Waitlist</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden text-gray-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
             </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-900">
+             <a href="index.html#vision" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">The Vision</a>
+            <a href="index.html#demo" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">How It Works</a>
+            <a href="index.html#faq" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">FAQ</a>
+            <a href="vision.html" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">Dig Deeper</a>
+            <a href="contribute.html" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">Contribute</a>
+            <a href="index.html#join" class="block py-2 px-4 text-sm text-blue-500 font-semibold hover:bg-gray-800">Join Waitlist</a>
         </div>
     </header>
 
@@ -288,6 +320,20 @@
                 }
             }, 500);
 
+            // --- Mobile Menu Toggle ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if(mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+                mobileMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.add('hidden');
+                    });
+                });
+            }
+
             // --- Roadmap Animation & Interaction Logic ---
             const roadmapItems = document.querySelectorAll('.roadmap-item');
             const roadmapPath = document.getElementById('roadmap-path');
@@ -298,15 +344,6 @@
                         // Make the item visible
                         entry.target.classList.add('visible');
 
-                        // Remove 'active' from all other items
-                        roadmapItems.forEach(item => {
-                            if (item !== entry.target) {
-                                item.classList.remove('active');
-                            }
-                        });
-                        // Add 'active' to the current item
-                        entry.target.classList.add('active');
-                        
                         // Calculate how far down the path should be drawn
                         const visibleItems = document.querySelectorAll('.roadmap-item.visible').length;
                         const percentage = (visibleItems / roadmapItems.length) * 0.95; // *0.95 to not overshoot
@@ -314,7 +351,7 @@
                     }
                 });
             }, { 
-                threshold: 0.6, // Trigger when 60% of the item is visible
+                threshold: 0.5, // Trigger when 50% of the item is visible
             });
 
             roadmapItems.forEach(item => observer.observe(item));
