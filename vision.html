@@ -31,24 +31,27 @@
         }
         body {
             font-family: 'Inter', sans-serif;
-            /* The radial-gradient is kept for texture, but the base color will be overridden by the .bg-gray-900 class */
             background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
             background-size: 4rem 4rem; 
             background-attachment: fixed;
+            /* --- RULE TO DISABLE COPY --- */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
 
-        /* --- ADDED RULES START --- */
         .bg-gray-900 {
             background-color: #1a1229 !important; /* Dark Violet */
         }
         .bg-black {
             background-color: #0f0b19 !important; /* Deeper Violet */
         }
-        /* --- ADDED RULES END --- */
         
         /* --- Logo Animation Styles --- */
         #logo {
             font-family: 'Inter', sans-serif;
+            /* user-select is already on body, but we can be explicit here too */
             user-select: none;
             -webkit-user-select: none;
             width: 10rem;
@@ -139,15 +142,13 @@
         .quest-info {
             width: calc(50% - 4rem);
             position: relative;
-            transition: transform 0.5s ease-in-out; /* Added for smooth scaling */
+            transition: transform 0.5s ease-in-out;
         }
         
-        /* Active state scaling */
         .roadmap-item.active .quest-info {
             transform: scale(1.05);
         }
         
-        /* Alternating sides for desktop */
         .roadmap-item:nth-child(odd) .quest-info {
             margin-left: calc(50% + 4rem);
             text-align: left;
@@ -159,11 +160,10 @@
             transform-origin: right center;
         }
 
-        /* Connector line for desktop */
         .quest-info::before {
             content: '';
             position: absolute;
-            top: 9px; /* Vertically center with the orb */
+            top: 9px;
             width: 4rem;
             height: 2px;
             background-color: rgba(0, 123, 255, 0.5);
@@ -175,27 +175,25 @@
             right: -4rem;
         }
         
-        /* Responsive styles for mobile */
+        /* --- UPDATED MOBILE STYLES --- */
         @media (max-width: 768px) {
-            .roadmap-path {
-                left: 1rem;
-            }
-            .quest-point {
-                left: 1rem;
-            }
             .quest-info {
-                width: calc(100% - 3rem);
-                margin-left: 3rem;
-                text-align: left !important;
-                transform-origin: left center !important;
+                width: calc(50% - 2rem); /* Smaller gap for mobile */
+            }
+            .roadmap-item:nth-child(odd) .quest-info {
+                margin-left: calc(50% + 2rem);
             }
             .roadmap-item:nth-child(even) .quest-info {
-                margin-right: 0;
+                margin-right: calc(50% + 2rem);
             }
             .quest-info::before {
-                left: -2rem !important;
                 width: 2rem;
-                right: auto;
+            }
+            .roadmap-item:nth-child(odd) .quest-info::before {
+                left: -2rem;
+            }
+            .roadmap-item:nth-child(even) .quest-info::before {
+                right: -2rem;
             }
         }
 
