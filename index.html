@@ -3,38 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- SEO Meta Tags -->
-    <title>AgentOS: The Operating System for AI Agents</title>
-    <meta name="description" content="Welcome to AgentOS, the world's first operating system built for AI agents. Discover how our vision-first platform gives agents sight to navigate the digital world with true autonomy.">
-    <meta name="keywords" content="AgentOS, AI agents, autonomous agents, operating system for AI, AI automation, third user, OSAgent">
-    <link rel="canonical" href="https://osagent.com/index.html"> <!-- Replace with your actual domain -->
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://osagent.com/"> <!-- Replace with your actual domain -->
-    <meta property="og:title" content="AgentOS: The Operating System for AI Agents">
-    <meta property="og:description" content="AgentOS is a new kind of operating system designed for AI agents, enabling them to perceive, act, and evolve in our world.">
-    <meta property="og:image" content="https://osagent.com/og-image.png"> <!-- IMPORTANT: Create and upload an image named og-image.png -->
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://osagent.com/"> <!-- Replace with your actual domain -->
-    <meta property="twitter:title" content="AgentOS: The Operating System for AI Agents">
-    <meta property="twitter:description" content="AgentOS is a new kind of operating system designed for AI agents, enabling them to perceive, act, and evolve in our world.">
-    <meta property="twitter:image" content="https://osagent.com/og-image.png"> <!-- IMPORTANT: Use the same image as above -->
-
+    <title>OSAgent: The Operating System for AI Agents</title>
+    <meta name="description" content="AgentOS is the first operating system built for AI agents, not humans. Enable AI to perceive, act, and evolve with ground-truth perception and a vision-first approach.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+    <!-- Lenis Smooth Scroll Library -->
+    <script src="https://unpkg.com/lenis@1.1.2/dist/lenis.min.js"></script>
     <style>
         :root {
             --primary-accent: #007BFF;
             --background-dark: #030712;
         }
-        html.dark { color-scheme: dark; scroll-behavior: smooth; }
+        /* Added for Lenis smooth scroll */
+        html.lenis {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+        html.dark { color-scheme: dark; } /* Removed scroll-behavior: smooth; */
         body { font-family: 'Inter', sans-serif; user-select: none; -webkit-user-select: none; }
         input, textarea { user-select: auto; -webkit-user-select: auto; }
         .cta-button { transition: transform 0.2s ease, box-shadow 0.2s ease; }
@@ -53,8 +46,26 @@
         .fade-in.visible { opacity: 1; transform: translateY(0); }
         .sticky-nav { transition: background-color 0.3s ease, box-shadow 0.3s ease; }
         
-        /* Original Animated Gradient Background */
-        .animated-gradient { background: linear-gradient(-45deg, #1e3a8a, #3b0764, #5b21b6, #111827); background-size: 400% 400%; animation: gradient 25s ease infinite; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.4; }
+        .bg-gray-900 {
+            background-color: #1a1229 !important; /* Dark Violet */
+        }
+        .bg-black {
+            background-color: #0f0b19 !important; /* Deeper Violet */
+        }
+        
+        .animated-gradient { 
+            background: linear-gradient(-45deg, #3c1677, #4a1a94, #2a0546, #1e1235); 
+            background-size: 400% 400%; 
+            animation: gradient 25s ease infinite; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: -1; 
+            opacity: 0.7;
+        }
+
         @keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         #hero-canvas { 
@@ -71,31 +82,28 @@
             z-index: 1; 
         }
 
+        /* --- Logo Animation Styles --- */
         #logo {
             font-family: 'Inter', sans-serif;
-            user-select: none;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
-            width: 10rem; /* Temporarily wider to prevent clipping during animation */
-            transition: width 0.5s ease; /* Smoothly transition width after animation */
+            width: 10rem; 
+            transition: width 0.5s ease;
             position: relative;
         }
         #logo-os, #logo-agent {
             position: absolute;
         }
-        /* Initial State: OSAgent */
         #logo-os {
             left: 0;
             z-index: 10;
         }
         #logo-agent {
-            left: 2.25rem; /* Approx width of "OS" + space */
+            left: 2.25rem;
             z-index: 5;
         }
-
-        /* Keyframe Animations for the refined effect */
         @keyframes move-os {
             0% { left: 0; transform: scale(1); opacity: 1; z-index: 10; }
             50% { transform: scale(0.85); opacity: 0.7; }
@@ -105,8 +113,6 @@
             from { left: 2.25rem; }
             to { left: 0; }
         }
-
-        /* Triggering the animation via class */
         .animate-logo #logo-os {
             animation: move-os 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
         }
@@ -198,23 +204,6 @@
 
         @media (max-width: 768px) { .workflow-diagram { flex-direction: column; } .workflow-arrow { width: 2px; height: 50px; margin: 1rem 0; } .workflow-arrow::after { right: -4px; top: auto; bottom: -2px; transform: rotate(45deg); } .flow-animation { background: linear-gradient(to bottom, transparent, var(--primary-accent), transparent); animation: flow-vertical 4s linear infinite; } @keyframes flow-vertical { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } } }
     </style>
-    
-    <!-- JSON-LD Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "AgentOS",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Cross-platform",
-      "description": "AgentOS is the first operating system built for AI agents, enabling them to perceive, act, and evolve in the digital world with true, vision-first autonomy.",
-      "url": "https://osagent.com/",
-      "author": {
-        "@type": "Organization",
-        "name": "OSAgent"
-      }
-    }
-    </script>
 </head>
 <body class="bg-gray-900 text-gray-100">
 
@@ -233,7 +222,7 @@
                     <a href="#vision" class="text-gray-300 hover:text-blue-400">The Vision</a>
                     <a href="#demo" class="text-gray-300 hover:text-blue-400">How It Works</a>
                     <a href="#faq" class="text-gray-300 hover:text-blue-400">FAQ</a>
-                    <a href="#dig-deeper" class="text-gray-300 hover:text-blue-400">Dig Deeper</a>
+                    <a href="vision.html" class="text-gray-300 hover:text-blue-400">Dig Deeper</a>
                     <a href="contribute.html" class="text-gray-300 hover:text-blue-400">Contribute</a>
                 </nav>
 
@@ -252,7 +241,7 @@
              <a href="#vision" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">The Vision</a>
             <a href="#demo" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">How It Works</a>
             <a href="#faq" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">FAQ</a>
-            <a href="#dig-deeper" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">Dig Deeper</a>
+            <a href="vision.html" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">Dig Deeper</a>
             <a href="contribute.html" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">Contribute</a>
             <a href="#join" class="block py-2 px-4 text-sm text-blue-500 font-semibold hover:bg-gray-800">Join Waitlist</a>
         </div>
@@ -510,6 +499,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Lenis Smooth Scroll Initialization ---
+            const lenis = new Lenis();
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+            requestAnimationFrame(raf);
+
             // Mobile menu toggle
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
@@ -517,6 +514,7 @@
                 mobileMenuButton.addEventListener('click', () => {
                     mobileMenu.classList.toggle('hidden');
                 });
+                // Also close menu when a link is clicked
                 mobileMenu.querySelectorAll('a').forEach(link => {
                     link.addEventListener('click', () => {
                         mobileMenu.classList.add('hidden');
@@ -683,7 +681,7 @@
                     }
                 });
                 backToTopButton.addEventListener('click', () => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    lenis.scrollTo('top', { duration: 1.5 }); // Use Lenis to scroll
                 });
             }
         });
