@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" class="dark"> <head>
+<html lang="en" class="dark"> <!-- Set to dark mode by default -->
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OSAgent: The Operating System for AI Agents</title>
@@ -9,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+    <!-- Lenis Smooth Scroll Library -->
     <script src="https://unpkg.com/lenis@1.1.2/dist/lenis.min.js"></script>
     <style>
         :root {
@@ -205,26 +207,31 @@
 </head>
 <body class="bg-gray-900 text-gray-100">
 
+    <!-- Sticky Navigation -->
     <header id="main-header" class="sticky top-0 z-50 w-full sticky-nav bg-gray-900/70 backdrop-blur-lg">
         <div class="container mx-auto px-4">
             <div class="relative flex justify-between items-center py-4 border-b border-gray-800">
-                <a href="/" id="logo" class="relative text-2xl font-bold text-white h-8 flex items-center">
+                <!-- Logo -->
+                <a href="index.html" id="logo" class="relative text-2xl font-bold text-white h-8 flex items-center">
                     <span id="logo-os">OS</span>
                     <span id="logo-agent">Agent</span>
                 </a>
 
+                <!-- Centered Navigation for desktop -->
                 <nav class="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center space-x-10 text-sm">
                     <a href="#vision" class="text-gray-300 hover:text-blue-400">The Vision</a>
                     <a href="#demo" class="text-gray-300 hover:text-blue-400">How It Works</a>
                     <a href="#faq" class="text-gray-300 hover:text-blue-400">FAQ</a>
-                    <a href="/vision" class="text-gray-300 hover:text-blue-400">Dig Deeper</a>
-                    <a href="/contribute" class="text-gray-300 hover:text-blue-400">Contribute</a>
+                    <a href="vision.html" class="text-gray-300 hover:text-blue-400">Dig Deeper</a>
+                    <a href="contribute.html" class="text-gray-300 hover:text-blue-400">Contribute</a>
                 </nav>
 
+                <!-- Right side button for desktop -->
                 <div class="hidden md:flex items-center ml-auto">
                     <a href="#join" class="cta-button bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg text-sm">Join Waitlist</a>
                 </div>
 
+                <!-- Mobile Menu Button -->
                 <button id="mobile-menu-button" class="md:hidden text-gray-200">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
@@ -234,15 +241,17 @@
              <a href="#vision" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">The Vision</a>
             <a href="#demo" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">How It Works</a>
             <a href="#faq" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">FAQ</a>
-            <a href="/vision" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">Dig Deeper</a>
-            <a href="/contribute" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">Contribute</a>
+            <a href="vision.html" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">Dig Deeper</a>
+            <a href="contribute.html" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-800">Contribute</a>
             <a href="#join" class="block py-2 px-4 text-sm text-blue-500 font-semibold hover:bg-gray-800">Join Waitlist</a>
         </div>
     </header>
 
     <main>
+        <!-- Hero Section -->
         <section id="hero" class="relative text-center min-h-screen flex items-center justify-center overflow-hidden">
             <div class="animated-gradient"></div>
+            <!-- The canvas for the rotating spheres -->
             <canvas id="hero-canvas"></canvas>
             <div class="container mx-auto px-4 hero-content">
                 <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 fade-in">The First Operating System for the Third User.</h1>
@@ -254,12 +263,14 @@
             </div>
         </section>
 
+        <!-- Social Proof / Backers -->
         <section class="py-16 bg-gray-900">
             <div class="container mx-auto px-4 fade-in">
                 <p class="text-center text-gray-400 font-semibold tracking-wider uppercase">FOR THE NEXT GENERATION OF BUILDERS AND CREATORS</p>
             </div>
         </section>
 
+        <!-- What We're Building Section -->
         <section id="vision" class="py-24 bg-black">
             <div class="container mx-auto px-4">
                 <h2 class="text-4xl md:text-5xl font-bold text-center text-white mb-16 fade-in">What We’re Building</h2>
@@ -288,6 +299,7 @@
             </div>
         </section>
 
+        <!-- Animated Workflow Section -->
         <section id="demo" class="py-24">
             <div class="container mx-auto px-4 fade-in">
                 <h2 class="text-4xl md:text-5xl font-bold text-center text-white mb-20">The Autonomous Loop</h2>
@@ -303,18 +315,21 @@
             </div>
         </section>
 
+        <!-- Dig Deeper Section -->
         <section id="dig-deeper" class="py-16 bg-gray-900 text-center">
             <div class="container mx-auto px-4 fade-in">
-                 <a href="/vision" class="secondary-cta font-semibold px-8 py-3 rounded-lg text-lg inline-block">Dig Deeper</a>
+                 <a href="vision.html" class="secondary-cta font-semibold px-8 py-3 rounded-lg text-lg inline-block">Dig Deeper</a>
             </div>
         </section>
         
+        <!-- Manifesto Section -->
         <section class="py-24 bg-gray-900">
             <div class="container mx-auto px-4 fade-in">
                 <p class="text-2xl md:text-3xl font-medium text-center text-gray-300 max-w-4xl mx-auto leading-relaxed">"The next user of the internet isn't human. It's the AI Agent. We are building the browser for this third user. The companies that adapt will own the agent economy. Everyone else will become irrelevant."</p>
             </div>
         </section>
 
+        <!-- Join the Movement Section -->
         <section id="join" class="py-24 bg-black text-center">
             <div class="container mx-auto px-4 fade-in">
                 <h2 class="text-4xl font-bold mb-4 text-white">This is Just the Beginning.</h2>
@@ -328,16 +343,18 @@
             </div>
         </section>
 
+        <!-- Recruitment Section -->
         <section id="recruit" class="py-24 bg-gray-900 text-center">
             <div class="container mx-auto px-4 fade-in">
                 <h2 class="text-4xl font-bold mb-4 text-white">Help Build the Future</h2>
                 <p class="text-lg text-gray-400 max-w-2xl mx-auto mb-8">
                     This is a monumental task, and we can't do it alone. If you're a talented engineer or visionary passionate about autonomous agents, we want to hear from you.
                 </p>
-                <a href="/contribute" class="secondary-cta font-semibold px-8 py-3 rounded-lg text-lg inline-block">I'm Interested in Contributing</a>
+                <a href="contribute.html" class="secondary-cta font-semibold px-8 py-3 rounded-lg text-lg inline-block">I'm Interested in Contributing</a>
             </div>
         </section>
 
+        <!-- FAQ Section -->
         <section id="faq" class="py-24 bg-black">
              <div class="container mx-auto px-4 max-w-3xl">
                 <h2 class="text-3xl md:text-4xl font-bold text-center text-white mb-12 fade-in">Frequently Asked Questions</h2>
@@ -360,6 +377,7 @@
                             <p>The difference is that AgentOS doesn't just follow a script; it perceives, reasons, and adapts. While traditional automation relies on brittle code that breaks with any UI change, our agents use a "vision-first" approach to see the screen like a human. This allows them to make intelligent, real-time decisions to complete a mission, even on unfamiliar interfaces.</p>
                         </div>
                     </div>
+                    <!-- NEW FAQ ITEM 1 -->
                     <div class="faq-item bg-gray-800 border border-gray-700 rounded-lg">
                         <button class="faq-question w-full flex justify-between items-center text-left p-6">
                             <span class="text-lg font-semibold">Is a "vision-first" approach actually reliable?</span>
@@ -369,6 +387,7 @@
                             <p>Yes, because it's a hybrid system. For standard web tasks, our agents use the underlying DOM structure for surgical precision, just like traditional automation. But when they encounter a non-standard application, an OS-level pop-up, or a broken website, our ground-truth visual perception acts as a powerful and universal fallback. This hybrid model combines the reliability of structured data with the universal applicability of human-like sight, making our agents far more resilient than any single-method system.</p>
                         </div>
                     </div>
+                    <!-- NEW FAQ ITEM 2 -->
                     <div class="faq-item bg-gray-800 border border-gray-700 rounded-lg">
                         <button class="faq-question w-full flex justify-between items-center text-left p-6">
                             <span class="text-lg font-semibold">Who is the first user for AgentOS?</span>
@@ -378,6 +397,7 @@
                             <p>Our first user is the "solo digital operator"—the founder, creator, or freelancer who is buried in repetitive digital work. We are starting by giving them a tool to build and deploy their own small AI workforce to automate high-value, time-consuming tasks like content repurposing, market research, and lead generation. We're solving our own problem first.</p>
                         </div>
                     </div>
+                    <!-- NEW FAQ ITEM 3 -->
                     <div class="faq-item bg-gray-800 border border-gray-700 rounded-lg">
                         <button class="faq-question w-full flex justify-between items-center text-left p-6">
                             <span class="text-lg font-semibold">Is this just a local desktop application? What is the long-term plan?</span>
@@ -392,6 +412,7 @@
         </section>
     </main>
 
+    <!-- Footer -->
     <footer class="bg-black text-gray-400">
         <div class="container mx-auto px-4 py-12 text-center">
             <p>&copy; 2025 AgentOS. The OS for the Third User.</p>
@@ -403,8 +424,11 @@
     </button>
     
     <div id="message-box"></div>
-    <div id="workflow-tooltip"></div> <script src="./firebase-config.js"></script>
+    <div id="workflow-tooltip"></div> <!-- Tooltip element -->
 
+    <script src="./firebase-config.js"></script>
+
+    <!-- Main Application Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
