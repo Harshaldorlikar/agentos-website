@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic Browser - Multi-Tasking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        ai: {
+                            base: '#0f172a',
+                            surface: '#1e293b',
+                            accent: '#8b5cf6', // Violet
+                            glow: '#d8b4fe',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #020617; color: #e2e8f0; overflow: hidden; }
+        .glass-panel { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-sidebar { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-left: 1px solid rgba(139, 92, 246, 0.2); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+
+        #agent-cursor { position: absolute; z-index: 9999; pointer-events: none; display: none; transition: top 0.6s cubic-bezier(0.22, 1, 0.36, 1), left 0.6s cubic-bezier(0.22, 1, 0.36, 1); filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.6)); }
+
+        .ai-typing {
+            border-bottom: 2px solid #a78bfa !important;
+            background-color: rgba(167, 139, 250, 0.1) !important;
+            color: #d8b4fe !important;
+            text-shadow: 0 0 10px rgba(167, 139, 250, 0.8);
+            transition: all 0.3s ease;
+        }
+        
+        .msg-enter { animation: slideIn 0.3s ease-out forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .cot-card {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .cot-card.active { transform: scale(1); opacity: 1; }
+        
+        .step-item { opacity: 0.4; transition: all 0.3s; }
+        .step-item.active { opacity: 1; color: #a78bfa; font-weight: 600; }
+        .step-item.done { opacity: 0.7; color: #10b981; text-decoration: line-through; }
+
+        /* JUNO Portal Specific Styles */
+        .juno-btn { background: #c0392b; color: white; } /* RBU Red */
+        .juno-header { background: #8e44ad; }
+
+        /* Tab Bar Styles */
+        .tab-bar { display: flex; align-items: flex-end; gap: 4px; padding: 8px 12px 0 12px; background: #0f172a; border-bottom: 1px solid #334155; }
+        .tab { 
+            background: #1e293b; 
+            color: #94a3b8; 
+            padding: 8px 16px; 
+            border-top-left-radius: 8px; 
+            border-top-right-radius: 8px; 
+            font-size: 12px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            cursor: pointer; 
+            max-width: 160px;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .tab:hover { background: #334155; color: #e2e8f0; }
+        .tab.active { background: #304159; color: #fff; border-top: 2px solid #8b5cf6; }
+        .tab-close { opacity: 0; transition: opacity 0.2s; border-radius: 50%; padding: 2px; }
+        .tab:hover .tab-close { opacity: 1; }
+        .tab-close:hover { background: rgba(255,255,255,0.2); }
+
+        .interactive-el { cursor: pointer; } /* Marker for safe elements */
+    </style>
+</head>
+<body class="h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Exit Demo Button (Links to browser.html) -->
+    <a href="browser.html" class="absolute top-4 left-4 z-[100] bg-slate-800 text-slate-400 hover:text-white px-3 py-1 rounded-full text-xs border border-slate-700 transition flex items-center gap-2">
+        <i class="fa-solid fa-arrow-left"></i> Exit Demo
+    </a>
+
+    <!-- Browser Container -->
+    <div class="relative w-full max-w-[1400px] h-[90vh] rounded-2xl overflow-hidden shadow-2xl border border-slate-700 flex flex-col bg-slate-900" id="browser-frame">
+        
+        <!-- Tab Bar -->
+        <div class="tab-bar" id="tab-container">
+            <!-- Tabs injected here -->
+            <button onclick="addNewTab()" class="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-800 mb-1 ml-1 transition">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+
+        <!-- 1. Browser Chrome -->
+        <div class="h-12 glass-panel flex items-center px-4 gap-4 z-20 relative bg-slate-800/50">
+            <div class="flex gap-4 text-slate-400 text-sm">
+                <i class="fa-solid fa-arrow-left hover:text-white cursor-pointer transition" onclick="goBack()"></i>
+                <i class="fa-solid fa-arrow-right hover:text-white cursor-pointer transition"></i>
+                <i class="fa-solid fa-rotate-right hover:text-white cursor-pointer transition" onclick="reloadPage()"></i>
+            </div>
+
+            <!-- Address Bar -->
+            <div class="flex-1 bg-slate-900/50 rounded-lg h-8 flex items-center px-4 border border-slate-700/50 transition group relative overflow-hidden focus-within:border-violet-500/50">
+                <i class="fa-solid fa-lock text-slate-500 text-xs mr-3" id="lock-icon"></i>
+                <input type="text" id="url-input" class="bg-transparent border-none outline-none text-slate-300 text-xs font-mono w-full placeholder-slate-600" placeholder="Enter URL...">
+                <div id="page-loader" class="absolute bottom-0 left-0 h-[2px] bg-ai-accent w-0 transition-all duration-300"></div>
+            </div>
+
+            <!-- Agent Icon / Sidebar Toggle -->
+            <div class="relative group cursor-pointer" id="agent-toggle" onclick="toggleSidebar()">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20 active:scale-95 transition-transform">
+                    <i class="fa-solid fa-robot text-white text-xs"></i>
+                </div>
+                <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-400 border-2 border-slate-900 rounded-full animate-pulse"></div>
+            </div>
+        </div>
+
+        <!-- 2. Main Content Stack -->
+        <div class="flex-1 flex relative overflow-hidden" onclick="handleGlobalClick(event)">
+            
+            <!-- Agent Cursor -->
+            <div id="agent-cursor">
+                <div class="relative">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 3L10.07 19.97L12.58 12.58L19.97 10.07L3 3Z" fill="#8b5cf6" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                    </svg>
+                    <div id="cursor-label" class="absolute left-6 top-6 bg-violet-600 text-white text-[10px] px-2 py-0.5 rounded-md shadow-lg whitespace-nowrap opacity-0 transition-opacity font-mono">
+                        Analyzing...
+                    </div>
+                </div>
+            </div>
+
+            <!-- View 1: Home Page -->
+            <div id="view-home" class="view-panel absolute inset-0 bg-slate-900 flex flex-col items-center justify-center z-10">
+                <div class="flex flex-col items-center animate-float mb-8">
+                    <div class="w-24 h-24 bg-gradient-to-tr from-violet-600 to-indigo-500 rounded-2xl flex items-center justify-center shadow-2xl mb-6">
+                        <i class="fa-solid fa-compass text-5xl text-white"></i>
+                    </div>
+                    <h1 class="text-4xl font-bold text-white mb-2 tracking-tight">Agentic<span class="text-violet-400">Browser</span></h1>
+                    <p class="text-slate-400">Ready for your next task.</p>
+                </div>
+
+                <!-- Quick Links Grid -->
+                <div class="grid grid-cols-4 gap-4 mb-10 w-full max-w-lg px-4">
+                    <div onclick="simulateLink('https://gmail.com')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/5 transition cursor-pointer group">
+                        <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 transition"><i class="fa-solid fa-envelope text-red-400"></i></div>
+                        <span class="text-xs text-slate-400 group-hover:text-slate-200">Gmail</span>
+                    </div>
+                    <div onclick="simulateLink('https://youtube.com')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/5 transition cursor-pointer group">
+                        <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 transition"><i class="fa-brands fa-youtube text-red-500"></i></div>
+                        <span class="text-xs text-slate-400 group-hover:text-slate-200">YouTube</span>
+                    </div>
+                    <div onclick="simulateLink('https://github.com')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/5 transition cursor-pointer group">
+                        <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 transition"><i class="fa-brands fa-github text-white"></i></div>
+                        <span class="text-xs text-slate-400 group-hover:text-slate-200">GitHub</span>
+                    </div>
+                    <div onclick="simulateLink('https://news.google.com')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/5 transition cursor-pointer group">
+                        <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 transition"><i class="fa-solid fa-newspaper text-blue-400"></i></div>
+                        <span class="text-xs text-slate-400 group-hover:text-slate-200">News</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View 2: Citizen Form -->
+            <div id="view-website" class="view-panel absolute inset-0 bg-[#f8fafc] overflow-y-auto hidden">
+                <div class="max-w-3xl mx-auto py-12 px-8">
+                    <div class="flex items-center gap-4 mb-8 border-b border-gray-200 pb-6 interactive-el">
+                        <div class="w-12 h-12 bg-slate-800 rounded flex items-center justify-center text-white text-xl"><i class="fa-solid fa-building-columns"></i></div>
+                        <div><h1 class="text-2xl font-bold text-slate-800">Department of Citizen Registry</h1></div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden" id="target-form">
+                        <div class="h-1 w-full bg-slate-100"><div class="h-full bg-slate-800 w-1/4"></div></div>
+                        <div class="p-8 space-y-6">
+                            <div class="space-y-2 form-group" id="group-fname"><label class="text-xs font-bold text-slate-500 uppercase">First Name</label><input type="text" id="input-fname" class="interactive-el w-full bg-slate-50 border p-3 rounded"></div>
+                            <div class="space-y-2 form-group" id="group-lname"><label class="text-xs font-bold text-slate-500 uppercase">Last Name</label><input type="text" id="input-lname" class="interactive-el w-full bg-slate-50 border p-3 rounded"></div>
+                            <div class="space-y-2 form-group" id="group-address"><label class="text-xs font-bold text-slate-500 uppercase">Address</label><textarea id="input-address" class="interactive-el w-full bg-slate-50 border p-3 rounded"></textarea></div>
+                            <div class="space-y-2 form-group" id="group-photo"><label class="text-xs font-bold text-slate-500 uppercase">ID Photo</label><div id="input-photo" class="interactive-el w-full bg-slate-50 border-2 border-dashed p-6 text-center text-slate-400 cursor-pointer overflow-hidden relative"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</div></div>
+                            <div class="pt-4 flex justify-end"><button id="submit-btn" class="interactive-el bg-slate-900 text-white px-6 py-3 rounded hover:bg-slate-800 transition">Submit</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View 3: JUNO Login -->
+            <div id="view-juno-login" class="view-panel absolute inset-0 bg-white hidden flex items-center justify-center">
+                <div class="w-[400px] border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                    <div class="bg-[#800000] p-6 text-center interactive-el"> <!-- RBU Red/Maroon -->
+                        <h2 class="text-white text-2xl font-bold font-serif">JUNO CAMPUS</h2>
+                        <p class="text-white/80 text-xs">RBU University Portal</p>
+                    </div>
+                    <div class="p-8 space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-gray-600">USERNAME</label>
+                            <input type="text" id="juno-user" class="interactive-el w-full border border-gray-300 p-2 rounded focus:border-[#800000] outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-gray-600">PASSWORD</label>
+                            <input type="password" id="juno-pass" class="interactive-el w-full border border-gray-300 p-2 rounded focus:border-[#800000] outline-none">
+                        </div>
+                        <button id="juno-login-btn" class="interactive-el w-full bg-[#800000] text-white py-2 rounded font-bold hover:bg-[#600000] transition">LOGIN</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View 4: JUNO Attendance -->
+            <div id="view-juno-dashboard" class="view-panel absolute inset-0 bg-gray-50 overflow-y-auto hidden">
+                <div class="bg-[#800000] h-16 flex items-center px-6 justify-between text-white shadow-md interactive-el">
+                    <span class="font-serif font-bold text-xl">JUNO <span class="opacity-70 font-sans text-sm">Faculty Portal</span></span>
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-user-circle"></i> Prof. A. Gupta</div>
+                </div>
+                <div class="p-8 max-w-5xl mx-auto">
+                    <div class="bg-white rounded shadow p-6 mb-6">
+                        <h2 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4">Mark Attendance: Session 2025-26</h2>
+                        
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 border-b">
+                                    <th class="p-3 text-xs font-bold text-gray-500">ROLL NO</th>
+                                    <th class="p-3 text-xs font-bold text-gray-500">STUDENT NAME</th>
+                                    <th class="p-3 text-xs font-bold text-gray-500 text-center">STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                        
+                        <div class="mt-6 flex justify-end gap-2">
+                             <button class="interactive-el px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">Cancel</button>
+                             <button id="juno-save-btn" class="interactive-el px-6 py-2 bg-[#800000] text-white rounded shadow hover:bg-[#600000]">Save Attendance</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View 5: 404 Page -->
+            <div id="view-404" class="view-panel absolute inset-0 bg-slate-50 flex flex-col items-center justify-center hidden text-center p-8">
+                <div class="text-6xl font-black text-slate-200 mb-4">404</div>
+                <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-6 text-4xl shadow-inner">
+                    <i class="fa-solid fa-person-digging text-slate-400"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Page Under Construction</h2>
+                <p class="text-slate-500 max-w-md">This part of the internet simulation has not been built yet. Please return to the available demos.</p>
+                <button onclick="goHome()" class="mt-8 px-6 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition">Return Home</button>
+            </div>
+
+            <!-- CoT Overlay -->
+            <div id="cot-overlay" class="absolute inset-0 z-40 flex items-center justify-center pointer-events-none">
+                <div id="cot-card" class="cot-card w-[450px] rounded-2xl p-6 text-slate-200 hidden">
+                    <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-4">
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-brain text-violet-400 animate-pulse"></i><span class="font-bold tracking-wide">Agent Reasoning</span></div>
+                    </div>
+                    <div id="cot-steps" class="space-y-4 font-mono text-xs"></div>
+                    <div class="mt-6 pt-4 border-t border-white/10 flex justify-between items-center">
+                        <span class="text-[10px] text-slate-500 uppercase tracking-wider">Status</span>
+                        <span id="cot-status" class="text-xs text-violet-300">Idle</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Sidebar (Chat & Session Manager) -->
+            <div id="ai-sidebar" class="absolute right-0 top-0 h-full w-[380px] glass-sidebar flex flex-col shadow-2xl z-50 transition-transform duration-500 ease-in-out">
+                
+                <!-- Sidebar Header -->
+                <div class="h-14 border-b border-white/10 flex items-center justify-between px-4 bg-white/5">
+                    <div class="flex items-center gap-2 cursor-pointer hover:bg-white/5 p-1 rounded transition" onclick="toggleSidebarView()">
+                        <i class="fa-solid fa-bars text-slate-400 hover:text-white"></i>
+                        <span class="font-bold text-slate-100 text-sm tracking-tight ml-2">Menu</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                         <button onclick="createNewSession()" class="w-8 h-8 rounded-full bg-violet-600/20 text-violet-400 hover:bg-violet-600 hover:text-white flex items-center justify-center transition" title="New Chat">
+                             <i class="fa-solid fa-plus text-xs"></i>
+                         </button>
+                         <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white ml-2">
+                             <i class="fa-solid fa-chevron-right"></i>
+                         </button>
+                    </div>
+                </div>
+
+                <!-- VIEW 1: Active Chat Interface -->
+                <div id="chat-view" class="flex-1 flex flex-col overflow-hidden transition-opacity duration-300">
+                    <div class="flex-1 p-5 overflow-y-auto space-y-4 font-sans" id="chat-container">
+                        <!-- Messages go here -->
+                    </div>
+                    <div class="p-4 bg-white/5 border-t border-white/10">
+                        <div class="relative">
+                            <input type="text" id="user-input" autocomplete="off" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl py-3 pl-4 pr-10 text-sm text-white focus:outline-none focus:border-violet-500 transition-all placeholder-slate-500" placeholder="Type a command...">
+                            <button onclick="handleSend()" class="absolute right-3 top-3 text-slate-400 hover:text-white transition">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: History List (Separate View) -->
+                <div id="history-view" class="flex-1 hidden flex-col bg-slate-900/50">
+                    <div class="p-4 border-b border-white/5">
+                        <button onclick="createNewSession()" class="w-full bg-violet-600 text-white py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-violet-500 transition shadow-lg">
+                            <i class="fa-solid fa-plus"></i> New Chat
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Recent Activity</h3>
+                        <div class="space-y-1" id="session-list-container">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- Data & Config ---
+        const personas = {
+            citizen: { fname: "Sarah", lname: "Connor", address: "1024 Techwood Drive" },
+            professor: { username: "prof.gupta", pass: "********" }
+        };
+
+        const students = [
+            { roll: "101", name: "Rahul Sharma", status: "P" },
+            { roll: "102", name: "Priya Patel", status: "A" },
+            { roll: "103", name: "Amit Singh", status: "P" },
+            { roll: "104", name: "Sneha Gupta", status: "P" }
+        ];
+
+        // State
+        let sessions = [];
+        let tabs = [];
+        let activeTabId = null;
+        let currentSessionId = null;
+        let isExecuting = false;
+        let isHistoryView = false;
+
+        // DOM Map
+        const DOM = {
+            cursor: document.getElementById('agent-cursor'),
+            cursorLabel: document.getElementById('cursor-label'),
+            chatContainer: document.getElementById('chat-container'),
+            chatView: document.getElementById('chat-view'),
+            historyView: document.getElementById('history-view'),
+            input: document.getElementById('user-input'),
+            urlInput: document.getElementById('url-input'),
+            sidebar: document.getElementById('ai-sidebar'),
+            sessionList: document.getElementById('session-list-container'),
+            tabContainer: document.getElementById('tab-container'),
+            views: {
+                home: document.getElementById('view-home'),
+                citizen: document.getElementById('view-website'),
+                junoLogin: document.getElementById('view-juno-login'),
+                junoDash: document.getElementById('view-juno-dashboard'),
+                notFound: document.getElementById('view-404')
+            },
+            cot: {
+                card: document.getElementById('cot-card'),
+                steps: document.getElementById('cot-steps'),
+                status: document.getElementById('cot-status')
+            }
+        };
+
+        // --- Initialization ---
+        function init() {
+            createNewSession("New Chat");
+            addNewTab(); // Start with one tab
+        }
+
+        // --- Tab Management ---
+        function addNewTab() {
+            const id = Date.now();
+            const newTab = { id: id, title: 'New Tab', url: 'about:blank', view: 'home' };
+            tabs.push(newTab);
+            switchTab(id);
+        }
+
+        function switchTab(id) {
+            activeTabId = id;
+            const tab = tabs.find(t => t.id === id);
+            showView(tab.view);
+            DOM.urlInput.value = tab.url === 'about:blank' ? '' : tab.url;
+            renderTabs();
+        }
+
+        function closeTab(e, id) {
+            e.stopPropagation();
+            if (tabs.length === 1) return; 
+            tabs = tabs.filter(t => t.id !== id);
+            if (activeTabId === id) switchTab(tabs[tabs.length - 1].id);
+            else renderTabs();
+        }
+
+        function updateActiveTabState(view, url, title) {
+            const tab = tabs.find(t => t.id === activeTabId);
+            if(tab) { tab.view = view; tab.url = url; tab.title = title; renderTabs(); }
+        }
+
+        function renderTabs() {
+            const plusBtn = DOM.tabContainer.querySelector('button'); 
+            DOM.tabContainer.innerHTML = '';
+            tabs.forEach(t => {
+                const isActive = t.id === activeTabId;
+                const div = document.createElement('div');
+                div.className = `tab ${isActive ? 'active' : ''}`;
+                div.onclick = () => switchTab(t.id);
+                div.innerHTML = `<span class="truncate max-w-[100px]">${t.title}</span><i class="fa-solid fa-times text-[10px] tab-close ml-2" onclick="closeTab(event, ${t.id})"></i>`;
+                DOM.tabContainer.appendChild(div);
+            });
+            DOM.tabContainer.appendChild(plusBtn);
+        }
+
+        // --- Navigation Logic ---
+        function simulateLink(url) { DOM.urlInput.value = url; handleUrlSubmit(); }
+
+        function handleUrlSubmit() {
+            const url = DOM.urlInput.value;
+            document.getElementById('page-loader').style.width = '100%';
+            setTimeout(() => {
+                document.getElementById('page-loader').style.width = '0%';
+                if(url.includes('citizen')) { showView('citizen'); updateActiveTabState('citizen', url, 'Citizen Registry'); }
+                else if(url.includes('juno')) { showView('junoLogin'); updateActiveTabState('junoLogin', url, 'JUNO Login'); }
+                else { showView('notFound'); updateActiveTabState('notFound', url, '404 Not Found'); }
+            }, 600);
+        }
+
+        DOM.urlInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleUrlSubmit(); });
+
+        function handleGlobalClick(e) {
+            const isWebView = !DOM.views.home.classList.contains('hidden') === false && !DOM.views.notFound.classList.contains('hidden') === false;
+            if (isWebView && !isExecuting) {
+                if (!e.target.closest('.interactive-el') && !e.target.closest('#ai-sidebar') && !e.target.closest('#agent-cursor')) {
+                    const tag = e.target.tagName.toLowerCase();
+                    if(tag !== 'input' && tag !== 'button' && tag !== 'textarea') simulateLink(DOM.urlInput.value + '/dead-link');
+                }
+            }
+        }
+
+        function goHome() { showView('home'); DOM.urlInput.value = ''; updateActiveTabState('home', 'New Tab', 'New Tab'); }
+        function goBack() { goHome(); }
+        function reloadPage() { simulateLink(DOM.urlInput.value); }
+
+        // --- Session Management ---
+        function toggleSidebarView() {
+            isHistoryView = !isHistoryView;
+            if (isHistoryView) { DOM.chatView.classList.add('hidden'); DOM.historyView.classList.remove('hidden'); DOM.historyView.classList.add('flex'); }
+            else { DOM.historyView.classList.add('hidden'); DOM.historyView.classList.remove('flex'); DOM.chatView.classList.remove('hidden'); }
+        }
+
+        function createNewSession(title = "New Chat") {
+            const id = Date.now();
+            const newSession = { id: id, title: title, messages: [{role: 'agent', text: "I'm your autonomous browser agent. I can navigate, research, and execute tasks across the web. How can I assist you?"}], state: 'IDLE', context: { mode: null } };
+            sessions.unshift(newSession); 
+            currentSessionId = id; DOM.chatContainer.innerHTML = ''; renderMessage(newSession.messages[0].text, 'agent'); renderSuggestions(); updateSessionListUI();
+            isHistoryView = false; DOM.historyView.classList.add('hidden'); DOM.historyView.classList.remove('flex'); DOM.chatView.classList.remove('hidden');
+        }
+
+        function switchSession(id) {
+            if (isExecuting) return;
+            if (currentSessionId === id) { toggleSidebarView(); return; }
+            currentSessionId = id; const session = sessions.find(s => s.id === id);
+            DOM.chatContainer.innerHTML = ''; session.messages.forEach(m => renderMessage(m.text, m.role === 'user' ? 'user' : 'agent', m.extraHTML));
+            if (session.messages.length === 1) renderSuggestions();
+            updateSessionListUI(); toggleSidebarView(); 
+        }
+
+        function deleteSession(e, id) { e.stopPropagation(); if(!confirm("Delete chat?")) return; sessions = sessions.filter(s => s.id !== id); if (sessions.length === 0) createNewSession(); else if (currentSessionId === id) switchSession(sessions[0].id); else updateSessionListUI(); }
+        function renameSession(e, id) { e.stopPropagation(); const session = sessions.find(s => s.id === id); const newName = prompt("Rename:", session.title); if (newName && newName.trim()) { session.title = newName.trim(); updateSessionListUI(); } }
+
+        function updateSessionListUI() {
+            DOM.sessionList.innerHTML = sessions.map(s => `
+                <div onclick="switchSession(${s.id})" class="group p-3 rounded-lg cursor-pointer flex items-center gap-3 transition-all ${s.id === currentSessionId ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-white/5 border border-transparent'}">
+                    <div class="w-8 h-8 rounded-full ${s.id === currentSessionId ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-400'} flex items-center justify-center text-sm"><i class="fa-solid fa-message"></i></div>
+                    <div class="flex-1 min-w-0"><div class="text-slate-200 font-medium text-sm truncate">${s.title}</div><div class="text-[10px] text-slate-500">${new Date(s.id).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div></div>
+                    <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="renameSession(event, ${s.id})" class="text-slate-500 hover:text-white"><i class="fa-solid fa-pencil text-xs"></i></button>
+                        <button onclick="deleteSession(event, ${s.id})" class="text-slate-500 hover:text-red-400"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                </div>`).join('');
+        }
+
+        // --- Chat Logic ---
+        function addMessageToSession(text, role, extraHTML = null) {
+            const session = sessions.find(s => s.id === currentSessionId);
+            session.messages.push({ role, text, extraHTML });
+            if (role === 'user' && session.messages.length === 2 && session.title === "New Chat") { session.title = text.length > 25 ? text.substring(0, 25) + '...' : text; updateSessionListUI(); }
+            renderMessage(text, role, extraHTML);
+        }
+
+        function renderMessage(text, type, extraHTML) {
+            const div = document.createElement('div');
+            div.className = `flex flex-col gap-1 ${type === 'user' ? 'items-end' : 'items-start'} msg-enter`;
+            div.innerHTML = `<div class="${type === 'user' ? 'bg-violet-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-200 rounded-tl-none'} text-sm px-4 py-3 rounded-2xl shadow-lg max-w-[90%]">${text}</div>`;
+            if (extraHTML) { const extra = document.createElement('div'); extra.innerHTML = extraHTML; extra.className="mt-1 w-full"; div.appendChild(extra); }
+            DOM.chatContainer.appendChild(div); DOM.chatContainer.scrollTop = DOM.chatContainer.scrollHeight;
+        }
+
+        function renderSuggestions() {
+            DOM.chatContainer.innerHTML += `
+                <div class="space-y-4 mt-4 animate-fade-in"><div class="grid grid-cols-2 gap-2"><button class="p-3 bg-slate-800/50 border border-slate-700/50 rounded-xl text-left hover:bg-slate-800 transition" onclick="fillInput('Research quantum computing')"><i class="fa-solid fa-magnifying-glass text-violet-400 mb-2"></i><div class="text-slate-300 text-xs font-medium">Deep Research</div></button><button class="p-3 bg-slate-800/50 border border-slate-700/50 rounded-xl text-left hover:bg-slate-800 transition" onclick="fillInput('Book flights to Tokyo')"><i class="fa-solid fa-plane text-emerald-400 mb-2"></i><div class="text-slate-300 text-xs font-medium">Travel Agent</div></button></div><div class="pt-4 border-t border-white/5"><div class="text-[10px] uppercase text-slate-500 font-bold mb-2">Interactive Demos</div><button onclick="fillInput('Register citizen')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 w-full text-left"><div class="w-8 h-8 rounded bg-violet-500/20 text-violet-400 flex items-center justify-center"><i class="fa-solid fa-passport"></i></div><div><div class="text-slate-200 text-xs font-medium">Citizen Registry</div></div></button><button onclick="fillInput('Upload attendance')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 w-full text-left"><div class="w-8 h-8 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-university"></i></div><div><div class="text-slate-200 text-xs font-medium">University Portal</div></div></button></div></div>`;
+        }
+
+        function fillInput(t) { DOM.input.value = t; handleSend(); }
+
+        // --- Core Agent Logic ---
+        async function handleSend() {
+            const text = DOM.input.value.trim(); if(!text) return;
+            DOM.input.value = ''; addMessageToSession(text, 'user');
+            if (isExecuting) { addMessageToSession("I'm busy executing a task.", 'agent'); return; }
+
+            const session = sessions.find(s => s.id === currentSessionId);
+            const lower = text.toLowerCase();
+            const greetings = ['hi', 'hello', 'hey'];
+            if (greetings.some(g => lower.startsWith(g)) && lower.length < 10) { setTimeout(() => addMessageToSession("Hello! I'm ready to help you navigate the web.", 'agent'), 600); return; }
+
+            // State Machine for Chat Flows
+            if (session.context.mode === 'citizen_confirm') {
+                if(lower.includes('yes') || lower.includes('ok') || lower.includes('sure')) { session.context.mode = 'citizen_photo'; setTimeout(() => addMessageToSession("Great. Please upload the passport photo to complete the dataset.", 'agent', `<button onclick="mockUploadCitizen()" class="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 px-3 py-2 rounded w-full text-left">Upload 'photo.jpg'</button>`), 600); }
+                else { session.context.mode = null; addMessageToSession("Understood. Please provide the details you'd like to use.", 'agent'); }
+                return;
+            }
+            if (session.context.mode === 'citizen_photo' && (lower.includes('upload') || lower.includes('sent'))) { executeCitizenSequence(session); return; }
+
+            if (session.context.mode === 'juno_confirm') {
+                if(lower.includes('yes') || lower.includes('ok') || lower.includes('sure')) { session.context.mode = 'juno_file'; setTimeout(() => addMessageToSession("Logged in as Prof. Gupta. Please upload the attendance sheet for today.", 'agent', `<button onclick="mockUploadJuno()" class="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 px-3 py-2 rounded w-full text-left">Upload 'sheet.jpg'</button>`), 600); }
+                else { session.context.mode = null; addMessageToSession("Okay, please provide the login credentials.", 'agent'); }
+                return;
+            }
+            if (session.context.mode === 'juno_file' && (lower.includes('upload') || lower.includes('sent'))) { executeJunoSequence(session); return; }
+
+            // Initial Trigger (BROADENED KEYWORDS)
+            if (lower.includes('citizen') || lower.includes('register') || lower.includes('form') || lower.includes('gov') || lower.includes('apply')) {
+                session.context.mode = 'citizen_confirm';
+                addMessageToSession(`I can help with that. I found a saved profile for <b>${personas.citizen.fname} ${personas.citizen.lname}</b>. Should I use these details?`, 'agent');
+            } else if (lower.includes('attendance') || lower.includes('juno') || lower.includes('student')) {
+                session.context.mode = 'juno_confirm';
+                addMessageToSession(`I can help upload attendance. I will log in using your saved profile for <b>Prof. A. Gupta</b>. Is that correct?`, 'agent');
+            } else {
+                setTimeout(() => addMessageToSession("I can certainly help with that. However, for this preview, I recommend trying the **Citizen Registry** or **University Attendance** tasks to see my full capabilities.", 'agent'), 800);
+            }
+        }
+
+        // --- Flows ---
+        function mockUploadCitizen() { addMessageToSession("Uploading photo.jpg...", 'user'); executeCitizenSequence(sessions.find(s=>s.id===currentSessionId)); }
+        
+        async function executeCitizenSequence(session) {
+            session.context.mode = null; isExecuting = true; toggleSidebar();
+            await runChainOfThought(["Locating Portal", "Filling Form", "Uploading Assets"]);
+            await agentNavigate("gov.portal.registry/citizen-intake", 'citizen', 'Citizen Registry');
+            await performFieldAction('input-fname', personas.citizen.fname, "First Name");
+            await performFieldAction('input-lname', personas.citizen.lname, "Last Name");
+            await performFieldAction('input-address', personas.citizen.address, "Address");
+            
+            // Photo Upload Animation
+            DOM.cursorLabel.innerText = "Uploading Asset...";
+            const photoZone = document.getElementById('input-photo');
+            photoZone.scrollIntoView({behavior: 'smooth', block: 'center'}); await wait(500);
+            await moveCursorToElement(photoZone);
+            
+            // Simulate Progress Bar
+            photoZone.innerHTML = `<div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2"><div class="bg-violet-600 h-2.5 rounded-full" style="width: 0%" id="upload-prog"></div></div><div class="text-xs text-violet-500 mt-1">Uploading...</div>`;
+            for(let i=0; i<=100; i+=20) { document.getElementById('upload-prog').style.width = i+'%'; await wait(100); }
+            photoZone.className = "interactive-el w-full bg-violet-50 border-2 border-violet-400 border-dashed p-6 text-center text-violet-600 cursor-pointer relative";
+            photoZone.innerHTML = `<i class="fa-solid fa-check-circle text-2xl"></i><div class="font-bold">photo.jpg uploaded</div>`;
+            await wait(500);
+
+            await clickElement('submit-btn', "Submitting");
+            document.getElementById('target-form').innerHTML = `<div class="p-12 text-center"><div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fa-solid fa-check text-2xl"></i></div><h2 class="text-2xl font-bold text-slate-800">Submitted</h2></div>`;
+            await wait(1000); toggleSidebar(); addMessageToSession("Form submitted successfully.", 'agent'); isExecuting = false; DOM.cursor.style.display = 'none';
+        }
+
+        function mockUploadJuno() { addMessageToSession("Uploading sheet.jpg...", 'user'); executeJunoSequence(sessions.find(s=>s.id===currentSessionId)); }
+
+        async function executeJunoSequence(session) {
+            session.context.mode = null; isExecuting = true; toggleSidebar();
+            await runChainOfThought(["Authenticating", "Parsing Data", "Marking Attendance"]);
+            await agentNavigate("juno.rbu.edu/login", 'junoLogin', 'JUNO Login');
+            await performFieldAction('juno-user', personas.professor.username, "Username");
+            await performFieldAction('juno-pass', personas.professor.pass, "Password");
+            await clickElement('juno-login-btn', "Login");
+            await wait(1000);
+            showView('junoDash'); updateActiveTabState('junoDash', 'juno.rbu.edu/dashboard', 'JUNO Dashboard'); renderStudentTable();
+            await wait(800);
+            for(let s of students) {
+                const btnId = s.status === 'P' ? `btn-p-${s.roll}` : `btn-a-${s.roll}`;
+                await clickElement(btnId, `Marking ${s.name}`);
+                
+                // Visual update for row and button
+                document.getElementById(`row-${s.roll}`).classList.add(s.status === 'P' ? 'bg-green-50' : 'bg-red-50');
+                const btn = document.getElementById(btnId);
+                btn.classList.remove('bg-gray-200', 'text-gray-500');
+                btn.classList.add(s.status === 'P' ? 'bg-green-600' : 'bg-red-600', 'text-white', 'shadow-md');
+            }
+            await clickElement('juno-save-btn', "Saving");
+            await wait(1000); toggleSidebar(); addMessageToSession("Attendance uploaded.", 'agent'); isExecuting = false; DOM.cursor.style.display = 'none';
+        }
+
+        function renderStudentTable() {
+            document.getElementById('attendance-table-body').innerHTML = students.map(s => `
+                <tr id="row-${s.roll}" class="border-b transition"><td class="p-3 text-sm font-mono text-slate-600">${s.roll}</td><td class="p-3 text-sm font-bold text-slate-800 interactive-el">${s.name}</td><td class="p-3 text-center"><button id="btn-p-${s.roll}" class="interactive-el px-2 bg-gray-200 rounded mr-1 text-gray-500 font-bold hover:bg-green-200">P</button><button id="btn-a-${s.roll}" class="interactive-el px-2 bg-gray-200 rounded text-gray-500 font-bold hover:bg-red-200">A</button></td></tr>
+            `).join('');
+        }
+
+        // --- Helpers ---
+        async function runChainOfThought(steps) {
+            DOM.cot.card.classList.remove('hidden'); void DOM.cot.card.offsetWidth; DOM.cot.card.classList.add('active');
+            DOM.cot.steps.innerHTML = steps.map((s,i) => `<div id="step-${i}" class="step-item">${i+1}. ${s}</div>`).join('');
+            for(let i=0; i<steps.length; i++) {
+                document.getElementById(`step-${i}`).classList.add('active'); DOM.cot.status.innerText = steps[i]; await wait(800);
+                document.getElementById(`step-${i}`).classList.remove('active'); document.getElementById(`step-${i}`).classList.add('done');
+            }
+            DOM.cot.card.classList.remove('active'); setTimeout(() => DOM.cot.card.classList.add('hidden'), 500);
+        }
+
+        async function agentNavigate(url, view, title) {
+            DOM.cursor.style.display = 'block'; await moveCursorToElement(DOM.urlInput);
+            DOM.urlInput.value = ""; await typeText(DOM.urlInput, url);
+            document.getElementById('page-loader').style.width = '100%'; await wait(800); document.getElementById('page-loader').style.width = '0%';
+            showView(view); updateActiveTabState(view, url, title);
+        }
+
+        async function performFieldAction(id, text, label) {
+            DOM.cursorLabel.innerText = label; DOM.cursorLabel.style.opacity = '1';
+            const el = document.getElementById(id); el.scrollIntoView({behavior: 'smooth', block: 'center'}); await wait(500);
+            await moveCursorToElement(el); el.focus(); el.classList.add('ai-typing'); await typeText(el, text); el.classList.remove('ai-typing');
+        }
+
+        async function clickElement(id, label) {
+            DOM.cursorLabel.innerText = label; DOM.cursorLabel.style.opacity = '1';
+            const el = document.getElementById(id); el.scrollIntoView({behavior: 'smooth', block: 'center'}); await wait(500);
+            await moveCursorToElement(el); el.classList.add('scale-95', 'opacity-80'); await wait(200); el.classList.remove('scale-95', 'opacity-80');
+        }
+
+        async function moveCursorToElement(el) {
+            return new Promise(r => {
+                const rect = el.getBoundingClientRect(); const c = DOM.cursor.offsetParent.getBoundingClientRect();
+                DOM.cursor.style.left = (rect.left - c.left + rect.width/2) + 'px'; DOM.cursor.style.top = (rect.top - c.top + rect.height/2) + 'px';
+                setTimeout(r, 600);
+            });
+        }
+
+        async function typeText(el, text) { for(let char of text) { el.value += char; await wait(30); } }
+        function showView(v) { Object.values(DOM.views).forEach(e => e.classList.add('hidden')); DOM.views[v].classList.remove('hidden'); }
+        function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+        function toggleSidebar() { DOM.sidebar.classList.toggle('translate-x-full'); }
+
+        init();
+        DOM.input.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleSend(); });
+    </script>
+</body>
+</html>
